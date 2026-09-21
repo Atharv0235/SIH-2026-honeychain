@@ -3,13 +3,13 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>HoneyChain — Decentralized Apiculture &amp; Blockchain Honey Traceability</title>
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Public+Sans:wght@400;500;600&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;display=swap" rel="stylesheet"/>
+<title>HoneyChain — Batch #8824 Harvest Verification &amp; Marketplace</title>
 <!-- Material Symbols -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Source Serif 4, Inter, Public Sans, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Public+Sans:wght@400;500;600;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -19,30 +19,43 @@
       theme: {
         extend: {
           colors: {
-            parchment: "#F6F1E4",
-            wood: "#5C3D2E",
-            darkwood: "#4A2F22",
-            amber: {
-              DEFAULT: "#E8A33D",
-              hover: "#C97A2B",
-              light: "#FDF4E5"
+            honey: {
+              DEFAULT: '#E8A33D',
+              light: '#F8E8C8',
+              dark: '#C97A2B',
+              muted: '#D4901F',
             },
-            ink: "#201C14",
-            muted: "#6B6455",
-            card: "#FBF8F0",
-            hairline: "#E7DFC9"
+            wood: {
+              DEFAULT: '#5C3D2E',
+              dark: '#4A2F22',
+              light: '#7A5440',
+            },
+            parchment: {
+              DEFAULT: '#F6F1E4',
+              surface: '#FBF8F0',
+              border: '#E7DFC9',
+              line: '#E8DCC3',
+            },
+            charcoal: '#201C14',
+            secondary: '#6B6455',
+            status: {
+              healthy: '#E8A33D',
+              moderate: '#D4901F',
+              warning: '#C9622E',
+              critical: '#A6371F'
+            }
           },
           borderRadius: {
-            "DEFAULT": "0.25rem",
-            "lg": "0.5rem",
-            "xl": "0.75rem",
-            "full": "9999px"
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            full: "9999px"
           },
           fontFamily: {
-            headline: ["\"Source Serif 4\"", "Georgia", "serif"],
-            display: ["\"Source Serif 4\"", "Georgia", "serif"],
+            headline: ["\"Source Serif 4\"", "serif"],
+            display: ["\"Source Serif 4\"", "serif"],
             body: ["Inter", "sans-serif"],
-            label: ["Public Sans", "sans-serif"],
+            label: ["\"Public Sans\"", "sans-serif"],
             mono: ["\"JetBrains Mono\"", "monospace"]
           }
         },
@@ -50,97 +63,474 @@
     }
   </script>
 <style>
-    /* Fixed Concentric Hexagonal Blueprint Pattern */
-    .bg-honey-pattern { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; background-color: #F6F1E4; background-image: radial-gradient(circle at 50% 30%, rgba(232, 163, 61, 0.08) 0%, transparent 60%), repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 48px, rgba(232, 220, 195, 0.35) 49px, rgba(232, 220, 195, 0.35) 50px); }
-
-    /* Subtle isometric floating animation */
-    @keyframes subtleFloat {
-      0%, 100% { transform: translateY(0px) rotate(-1deg); }
-      50% { transform: translateY(-8px) rotate(1deg); }
-    }
-    .float-hive {
-      animation: subtleFloat 6s ease-in-out infinite;
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
     }
     
-    /* Gentle pulsing beacon */
-    @keyframes beaconPulse {
-      0% { transform: scale(0.95); opacity: 0.8; }
-      50% { transform: scale(1.3); opacity: 0.3; }
-      100% { transform: scale(0.95); opacity: 0.8; }
+    /* Subtle Fixed Hexagonal Pattern Background */
+    .honeychain-hex-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-color: #F6F1E4;
+      background-image: radial-gradient(#E8DCC3 1px, transparent 1px), radial-gradient(#E8DCC3 1px, #F6F1E4 1px);
+      background-size: 32px 32px;
+      background-position: 0 0, 16px 16px;
+      opacity: 0.75;
     }
-    .beacon-pulse {
-      animation: beaconPulse 2.4s ease-in-out infinite;
+
+    .hex-vector-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-repeat: repeat;
+      background-size: 80px 138.56px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='138.56' viewBox='0 0 80 138.56'%3E%3Cpath d='M40 0 L80 23.09 L80 69.28 L40 92.38 L0 69.28 L0 23.09 Z M40 138.56 L80 115.47 L80 69.28 L40 46.19 L0 69.28 L0 115.47 Z' fill='none' stroke='%23E8DCC3' stroke-width='1' stroke-opacity='0.35'/%3E%3C/svg%3E");
+    }
+
+    /* Custom scrollbar for horizontal batch tray */
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   </style>
 </head>
-<body class="bg-parchment text-ink font-body selection:bg-amber selection:text-white antialiased min-h-screen relative flex flex-col">
-<!-- FIXED BACKGROUND LAYER -->
-<div class="bg-honey-pattern"></div>
-<!-- STICKY TOP NAVBAR -->
-<header class="docked full-width top-0 sticky z-50 bg-[#5C3D2E] dark:bg-[#4A2F22] shadow-md border-b border-[#4A2F22]/40 transition-colors">
-<div class="flex justify-between items-center w-full px-6 md:px-12 py-3.5 max-w-7xl mx-auto">
-<!-- Brand Logo / Wordmark -->
-<a class="flex items-center gap-2.5 group" href="#">
-<span class="w-3 h-3 rounded-full bg-[#E8A33D] shadow-[0_0_10px_#E8A33D] ring-2 ring-[#E8A33D]/30 transition-transform group-hover:scale-110"></span>
-<span class="font-headline text-xl font-bold text-[#F6F1E4] tracking-tight">HoneyChain</span>
-</a>
-<!-- Desktop Navigation Links -->
-<nav class="hidden lg:flex items-center gap-7"><a class="text-[#E8A33D] font-medium transition-colors relative py-1 text-sm" href="index.html">Home<span class="absolute bottom-0 left-0 w-full h-[2px] bg-[#E8A33D] rounded-full"></span></a></nav>
-<!-- Trailing Action / Pill Badge -->
-<div class="flex items-center gap-3">
-<div class="border border-[#E8DCC3]/30 text-[#F6F1E4]/90 text-xs px-3.5 py-1.5 rounded-full bg-[#4A2F22]/60 font-label tracking-wide flex items-center gap-1.5 shadow-inner">
-<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D]"></span>
-<span class="hidden sm:inline">Team Brain Hustlers · SIH 2026</span>
-<span class="sm:hidden">SIH 2026</span>
+<body class="bg-parchment text-charcoal font-body antialiased min-h-screen relative flex flex-col items-center">
+<!-- Fixed Radial Concentric Hexagonal Backdrop -->
+<div class="honeychain-hex-bg"></div>
+<div class="hex-vector-overlay"></div>
+<!-- Mobile Screen Container (Width-locked for mobile wireframe fidelity, expandable on tablet/desktop) -->
+<div class="relative z-10 w-full max-w-md mx-auto flex flex-col min-h-screen pb-24 shadow-2xl bg-parchment/95">
+<!-- SHARED COMPONENT: TopAppBar (from JSON specs) -->
+<header class="bg-[#5C3D2E] dark:bg-[#4A2F22] docked full-width top-0 sticky border-b border-[#4A2F22] shadow-sm flex justify-between items-center w-full px-4 h-14 z-50 transition-all">
+<!-- Leading Icon / Back button -->
+<button aria-label="Go Back" class="text-[#F6F1E4] hover:text-[#E8A33D] transition-colors duration-150 active:opacity-80 p-1 flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<!-- Headline -->
+<div class="flex items-center space-x-2">
+<h1 class="font-headline font-bold text-lg text-[#F6F1E4] tracking-normal">Batch #8824 Harvest</h1>
 </div>
-</div>
+<!-- Trailing Icon / Verified badge status -->
+<div class="flex items-center space-x-1 text-[#E8A33D] hover:text-[#E8A33D] transition-colors duration-150" title="Polygon Merkle Proof Verified">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">verified</span>
 </div>
 </header>
-<!-- MAIN CANVAS -->
-<main class="relative z-10 flex-grow max-w-7xl mx-auto px-6 md:px-12 w-full pt-16 pb-20 flex flex-col items-center justify-center text-center h-full min-h-[60vh]">
-  <div class="bg-card/95 backdrop-blur-md border border-[#E8A33D]/30 p-10 rounded-2xl shadow-xl max-w-lg w-full">
-    <div class="w-16 h-16 rounded-full bg-[#E8A33D]/15 text-[#5C3D2E] flex items-center justify-center mx-auto mb-6 border border-amber/30">
-      <span class="material-symbols-outlined text-3xl">route</span>
-    </div>
-    <h1 class="font-headline font-bold text-3xl text-ink mb-3">Product page</h1>
-    <p class="text-muted mb-8">Batch story and price</p>
-    <a href="checkout.html" class="bg-[#E8A33D] hover:bg-[#C97A2B] text-white font-medium px-8 py-3.5 rounded-xl shadow-md transition-all duration-150 inline-block w-full">
-      Buy This Batch
-    </a>
-  </div>
-</main>
-<!-- BLUEPRINT FOOTER -->
-<footer class="docked full-width bottom-0 bg-[#201C14] dark:bg-[#15120C] border-t border-[#E8DCC3]/20 relative z-10 text-[#E8DCC3]/80">
-<div class="w-full px-6 md:px-12 py-10 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-<!-- Brand & SIH Problem Statement Notice -->
-<div class="flex flex-col items-center md:items-start text-center md:text-left">
-<div class="flex items-center gap-2 mb-2">
-<span class="w-2.5 h-2.5 rounded-full bg-[#E8A33D]"></span>
-<span class="font-headline text-base font-bold text-[#F6F1E4]">HoneyChain</span>
-</div>
-<p class="font-body text-xs text-[#E8DCC3]/60 mb-1">
-          Built on the Honey Chain blueprint for SIH problem statement 26021.
-        </p>
-<p class="font-mono text-xs text-[#E8DCC3]/40">
-          Data sources: Indian Apiculture Telemetry Standard · Polygon PoS · Open Food Facts NMR Reference Database · SIH 2026.
-        </p>
-</div>
-<!-- Links Cluster -->
-<div class="flex flex-wrap justify-center md:justify-end items-center gap-x-6 gap-y-2 text-xs font-body">
-<a class="text-[#E8DCC3]/70 hover:text-[#E8A33D] transition-colors duration-150" href="architecture.html">Architecture Blueprint</a>
-<a class="text-[#E8DCC3]/70 hover:text-[#E8A33D] transition-colors duration-150" href="#contracts">Smart Contracts</a>
-<a class="text-[#E8DCC3]/70 hover:text-[#E8A33D] transition-colors duration-150" href="#telemetry">Telemetry Specs</a>
-<a class="text-[#E8DCC3]/70 hover:text-[#E8A33D] transition-colors duration-150" href="#hackathon">Hackathon Submission</a>
-<a class="text-[#E8DCC3]/70 hover:text-[#E8A33D] transition-colors duration-150" href="#nodes">Node Registry</a>
+<!-- MAIN SCROLLABLE CONTENT CANVAS -->
+<main class="w-full flex-1 px-4 pt-3 space-y-4">
+<!-- TOP SECTION: Product Hero Image & Identity -->
+<div class="bg-parchment-surface border border-parchment-border rounded-lg overflow-hidden shadow-sm">
+<div class="relative w-full aspect-square bg-[#ECE4D0] overflow-hidden group">
+<img alt="Batch #8824 Raw Amber Forest Honey Jar" class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxQcdMXsVcNGKGucF8eoQCdMB3zrnA56P9VBCNw6Lv4jZTvFYgQlWGJFyKOD_oU84i3Fokp6tWJhdv3jqBTQZdUk5huSchcHskSrXJSfADNOsu27vXAoftSilbdsz1iTG6eYaifetJc-WOsqdGN_bNzn-MzJm4qrmAhgsby3tnbOopNhygrYuCd4wKqzT5eqTLq0VfGxTr-tItwCCAEpggO8dTLD0HmhoWqDTuc6MlH36aGVtJMiaqZN49CCXawK6vkcCOiWoGUqVk"/>
+<!-- Overlay Badge: Polygon PoS Anchor -->
+<div class="absolute top-3 left-3 right-3 flex justify-between items-start">
+<div class="bg-[#201C14]/85 backdrop-blur-sm border border-[#E8A33D]/40 text-[#F6F1E4] rounded-full px-2.5 py-1 text-[11px] font-mono flex items-center gap-1.5 shadow-md">
+<span class="text-[#E8A33D] text-[13px]">⚓</span>
+<span>Anchored on Polygon PoS (Block #58219420)</span>
 </div>
 </div>
-<!-- Copyright Subline -->
-<div class="w-full border-t border-[#E8DCC3]/10 py-4 px-6 text-center">
-<p class="font-mono text-xs text-[#E8DCC3]/40">
-        © 2025 HoneyChain. Decentralized Apiculture &amp; Honey Provenance Architecture.
-      </p>
+<!-- Micro indicator banner inside photo -->
+<div class="absolute bottom-3 left-3 bg-[#5C3D2E]/90 text-[#F6F1E4] backdrop-blur-sm px-2.5 py-0.5 rounded-full text-[10px] font-label font-medium flex items-center gap-1 border border-[#E7DFC9]/30">
+<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D] animate-pulse"></span>
+            Langstroth Pod #04 Sealed Lot
+          </div>
 </div>
+<!-- Product Identity Details -->
+<div class="p-4 space-y-3">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-full border border-honey text-honey-dark font-label font-medium text-[11px]">
+                Raw • Single-Origin
+              </span>
+<span class="px-2 py-0.5 rounded-full border border-parchment-border text-secondary font-mono text-[11px]">
+                Batch HC-8824
+              </span>
+</div>
+<h2 class="font-headline font-bold text-2xl text-charcoal leading-snug">
+              Wild Mountain Acacia &amp; Sidr Blossom Honey
+            </h2>
+</div>
+<!-- Metadata Tags Bento Grid -->
+<div class="grid grid-cols-1 gap-2 pt-1 border-t border-parchment-border/60">
+<div class="flex items-start text-xs text-secondary gap-2">
+<span class="material-symbols-outlined text-[16px] text-honey shrink-0 mt-0.5">local_florist</span>
+<div>
+<strong class="font-medium text-charcoal">Floral Source:</strong> Acacia modesta &amp; Sidr (Ziziphus)
+              </div>
+</div>
+<div class="flex items-start text-xs text-secondary gap-2">
+<span class="material-symbols-outlined text-[16px] text-honey shrink-0 mt-0.5">landscape</span>
+<div>
+<strong class="font-medium text-charcoal">Apiary Region:</strong> Kullu Valley, Himachal Pradesh <span class="font-mono text-[11px] text-charcoal/80">(Alt: 2,180m)</span>
+</div>
+</div>
+<div class="flex items-start text-xs text-secondary gap-2">
+<span class="material-symbols-outlined text-[16px] text-honey shrink-0 mt-0.5">calendar_month</span>
+<div>
+<strong class="font-medium text-charcoal">Harvest Date:</strong> <span class="font-mono text-[11px]">18 Oct 2026</span>
+</div>
+</div>
+</div>
+<!-- Price Selector By Size -->
+<div class="pt-2">
+<label class="block text-xs font-label font-medium text-secondary mb-1.5">Select Container Size</label>
+<div class="grid grid-cols-3 gap-2" id="size-selector">
+<!-- 250g Option -->
+<button class="border border-parchment-border bg-parchment hover:border-honey rounded-lg p-2 text-center transition-all" type="button">
+<div class="text-[11px] font-medium text-charcoal">250g Jar</div>
+<div class="font-mono text-xs font-semibold text-charcoal mt-0.5">₹380</div>
+</button>
+<!-- 500g Option (Selected) -->
+<button class="border-2 border-honey bg-honey/10 rounded-lg p-2 text-center relative shadow-sm" type="button">
+<span class="absolute -top-2 left-1/2 -translate-x-1/2 bg-honey text-white text-[9px] font-label font-bold px-1.5 py-0.2 rounded-full uppercase tracking-tighter">Selected</span>
+<div class="text-[11px] font-bold text-charcoal">500g Glass</div>
+<div class="font-mono text-xs font-bold text-[#C97A2B] mt-0.5">₹649</div>
+</button>
+<!-- 1kg Option -->
+<button class="border border-parchment-border bg-parchment hover:border-honey rounded-lg p-2 text-center transition-all" type="button">
+<div class="text-[11px] font-medium text-charcoal">1kg Pot</div>
+<div class="font-mono text-xs font-semibold text-charcoal mt-0.5">₹1,180</div>
+</button>
+</div>
+</div>
+<!-- Stock Indicator Alert -->
+<div class="flex items-center justify-between text-xs bg-[#F3ECE0] rounded-lg p-2.5 border border-parchment-border">
+<div class="flex items-center gap-1.5 text-status-warning font-medium">
+<span class="material-symbols-outlined text-[16px]">hourglass_bottom</span>
+<span>Only 18 jars remaining from 40-jar micro-lot</span>
+</div>
+<span class="font-mono text-[10px] text-secondary">Lot #04/40</span>
+</div>
+<!-- Primary CTA & Beekeeper Split Card -->
+<div class="space-y-2 pt-1">
+<button class="w-full bg-honey hover:bg-honey-dark active:scale-[0.99] text-white font-label font-semibold py-3.5 px-4 rounded-lg shadow-sm flex items-center justify-center gap-2 transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+<span>Buy Verified Jar • ₹649</span>
+</button>
+<div class="flex items-center justify-between px-1 text-[11px] text-secondary">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-honey">handshake</span>
+<span>Fair Trade Smart Split:</span>
+</div>
+<div class="font-mono font-semibold text-[#5C3D2E]">
+                74% direct to apiary co-op
+              </div>
+</div>
+</div>
+</div>
+</div>
+<!-- BATCH STORY & APIARY TELEMETRY SECTION -->
+<section class="bg-parchment-surface border border-parchment-border rounded-lg p-4 shadow-sm space-y-3.5">
+<div class="flex items-center justify-between border-b border-parchment-border pb-2.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-wood text-[20px]">nature_people</span>
+<h3 class="font-headline font-bold text-lg text-charcoal">Batch Provenance &amp; Story</h3>
+</div>
+<span class="font-mono text-[10px] px-2 py-0.5 rounded-full bg-honey/15 text-honey-dark font-medium border border-honey/30">Pod #04 Verified</span>
+</div>
+<div class="space-y-2.5 text-xs">
+<!-- Apiary & Beekeeper Specs -->
+<div class="bg-parchment p-3 rounded-lg border border-parchment-border space-y-2">
+<div class="flex justify-between">
+<span class="text-secondary">Apiary Estate</span>
+<span class="font-semibold text-charcoal">Beas River Alpine Apiary Co-op</span>
+</div>
+<div class="flex justify-between">
+<span class="text-secondary">Head Beekeeper</span>
+<span class="font-semibold text-charcoal">Rameshwar Thakur &amp; Family</span>
+</div>
+<div class="flex justify-between">
+<span class="text-secondary">Accreditation</span>
+<span class="font-mono text-[11px] text-charcoal">KVIC Registered #KVIC-HP-409</span>
+</div>
+<div class="flex justify-between border-t border-parchment-border/60 pt-1.5">
+<span class="text-secondary">Hive Contribution</span>
+<span class="font-medium text-wood-dark">Harvested across 6 instrumented hives</span>
+</div>
+</div>
+<!-- Telemetry Sparkline & Summary -->
+<div class="p-3 bg-[#F4EFE2] rounded-lg border border-parchment-border space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-label font-bold text-charcoal text-[11px] uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-honey">ssid_chart</span>
+                Nectar Bloom Telemetry
+              </span>
+<span class="font-mono text-[10px] text-secondary">28-Day Sensor Stream</span>
+</div>
+<p class="text-[12px] text-secondary leading-relaxed">
+              Telemetry log shows <strong class="text-charcoal font-semibold">+20.4 kg net nectar gain</strong> over 28-day peak bloom with steady <strong class="text-charcoal font-semibold">34.5°C</strong> brood core temp and zero synthetic feeding spikes.
+            </p>
+<!-- Sparkline visualization SVG -->
+<div class="pt-1">
+<div class="h-10 w-full flex items-end">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 300 40">
+<path d="M0,35 Q30,34 60,30 T120,24 T180,18 T240,10 T300,5" fill="none" stroke="#E8A33D" stroke-linecap="round" stroke-width="2.5"></path>
+<path d="M0,35 Q30,34 60,30 T120,24 T180,18 T240,10 T300,5 L300,40 L0,40 Z" fill="url(#honeyGradient)" opacity="0.25"></path>
+<defs>
+<lineargradient id="honeyGradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#E8A33D"></stop>
+<stop offset="100%" stop-color="#F6F1E4"></stop>
+</lineargradient>
+</defs>
+<circle cx="300" cy="5" fill="#5C3D2E" r="3.5" stroke="#E8A33D" stroke-width="1.5"></circle>
+</svg>
+</div>
+<div class="flex justify-between text-[10px] font-mono text-secondary mt-1">
+<span>Bloom Day 01 (Base 42kg)</span>
+<span class="text-honey-dark font-semibold">Harvest Cap (62.4kg)</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- LAB REPORT & MERKLE CERTIFICATE SECTION -->
+<section class="bg-parchment-surface border border-parchment-border rounded-lg p-4 shadow-sm space-y-3.5">
+<div class="flex items-center justify-between border-b border-parchment-border pb-2.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-wood text-[20px]">science</span>
+<h3 class="font-headline font-bold text-lg text-charcoal">Analytical Lab Certificate</h3>
+</div>
+<span class="font-mono text-[10px] text-secondary">22 Oct 2026</span>
+</div>
+<div class="text-xs space-y-3">
+<div class="flex items-center justify-between text-secondary">
+<span>Testing Facility:</span>
+<span class="font-semibold text-charcoal text-right">NABL &amp; FSSAI Lab #ND-884, New Delhi</span>
+</div>
+<!-- Bento Grid of Key Honey Parameters -->
+<div class="grid grid-cols-2 gap-2">
+<!-- Moisture -->
+<div class="bg-parchment p-2.5 rounded-lg border border-parchment-border">
+<div class="text-secondary text-[11px]">Moisture Level</div>
+<div class="flex items-baseline justify-between mt-1">
+<span class="font-mono font-bold text-sm text-charcoal">17.2%</span>
+<span class="text-[10px] text-honey-dark font-medium">&lt;18% Standard</span>
+</div>
+</div>
+<!-- C4 Sugar / Invert Syrup -->
+<div class="bg-parchment p-2.5 rounded-lg border border-parchment-border">
+<div class="text-secondary text-[11px]">C4 Sugar / Invert Syrup</div>
+<div class="flex items-baseline justify-between mt-1">
+<span class="font-mono font-bold text-sm text-charcoal">0.0%</span>
+<span class="text-[10px] text-honey-dark font-medium font-mono">Passed NMR</span>
+</div>
+</div>
+<!-- Pollen Profile -->
+<div class="bg-parchment p-2.5 rounded-lg border border-parchment-border">
+<div class="text-secondary text-[11px]">Pollen Purity Profile</div>
+<div class="flex items-baseline justify-between mt-1">
+<span class="font-mono font-bold text-sm text-charcoal">89.2%</span>
+<span class="text-[10px] text-secondary">Monofloral</span>
+</div>
+</div>
+<!-- HMF Quality -->
+<div class="bg-parchment p-2.5 rounded-lg border border-parchment-border">
+<div class="text-secondary text-[11px]">Hydroxymethylfurfural (HMF)</div>
+<div class="flex items-baseline justify-between mt-1">
+<span class="font-mono font-bold text-sm text-charcoal">8.4 mg/kg</span>
+<span class="text-[10px] text-honey-dark font-medium">Fresh Unheated</span>
+</div>
+</div>
+</div>
+<!-- Download Full Certificate Button -->
+<a class="w-full border border-honey text-[#C97A2B] hover:bg-honey/10 active:scale-[0.99] font-label font-medium py-2.5 px-3 rounded-lg text-xs flex items-center justify-center gap-2 transition-all" href="#download-pdf">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+<span>Download Full Lab Certificate (PDF • 1.2 MB)</span>
+</a>
+<!-- Cryptographic Merkle Hash Line -->
+<div class="p-2.5 bg-[#F2EDE1] rounded border border-parchment-border text-[10px] font-mono space-y-1">
+<div class="text-secondary">SHA-256 Digest:</div>
+<div class="truncate text-charcoal font-semibold">0x9f3b8e442d991bce987a419283f098c21</div>
+<div class="text-secondary pt-0.5">Anchored Polygon Merkle Tree Root:</div>
+<div class="truncate text-[#5C3D2E] font-semibold">0x1f90b84c81a2eef901235a901ffca49cc</div>
+</div>
+<!-- Apiculture Proof Note -->
+<div class="border-l-2 border-honey pl-2.5 py-1 text-[11px] text-secondary leading-snug">
+<strong class="text-charcoal font-medium">Apiculture Proof Note:</strong> The blockchain guarantees this lab report and harvest timestamp cannot be altered or retroactively backdated after anchoring.
+          </div>
+</div>
+</section>
+<!-- WAYS TO BUY SECTION -->
+<section class="space-y-2.5">
+<h3 class="font-headline font-bold text-lg text-charcoal px-1">Ways to Buy &amp; Support Hive</h3>
+<div class="space-y-2.5">
+<!-- 1. One-Time Purchase -->
+<div class="bg-parchment-surface border-2 border-honey/50 rounded-lg p-3.5 shadow-sm flex items-start justify-between relative overflow-hidden">
+<div class="space-y-1 max-w-[70%]">
+<div class="flex items-center gap-1.5">
+<span class="font-headline font-bold text-sm text-charcoal">One-Time Harvest Jar</span>
+<span class="bg-honey text-white text-[9px] font-mono px-1.5 py-0.2 rounded">Immediate</span>
+</div>
+<p class="text-xs text-secondary">500g Jar @ ₹649. Instant dispatch with tamper-evident physical and cryptographic seal.</p>
+</div>
+<div class="text-right">
+<div class="font-mono font-bold text-sm text-charcoal">₹649</div>
+<button class="mt-2 text-xs bg-honey text-white px-3 py-1.5 rounded font-label font-medium hover:bg-honey-dark transition-colors">Select</button>
+</div>
+</div>
+<!-- 2. Adopt-a-Hive Subscription -->
+<div class="bg-parchment-surface border border-parchment-border rounded-lg p-3.5 shadow-sm flex items-start justify-between">
+<div class="space-y-1 max-w-[70%]">
+<div class="flex items-center gap-1.5">
+<span class="font-headline font-bold text-sm text-charcoal">Adopt-a-Hive Subscription</span>
+<span class="border border-honey text-honey-dark text-[9px] font-label px-1.5 py-0.2 rounded-full font-medium">Seasonal</span>
+</div>
+<p class="text-xs text-secondary">Receive 4 seasonal jars directly from Hive #H-08 + live pod weight &amp; telemetry access.</p>
+</div>
+<div class="text-right">
+<div class="font-mono font-bold text-sm text-charcoal">₹2,400<span class="text-[10px] text-secondary">/yr</span></div>
+<button class="mt-2 text-xs border border-honey text-honey-dark hover:bg-honey/10 px-3 py-1.5 rounded font-label font-medium transition-colors">Join</button>
+</div>
+</div>
+<!-- 3. Pre-order Next Bloom -->
+<div class="bg-parchment-surface border border-parchment-border rounded-lg p-3.5 shadow-sm flex items-start justify-between">
+<div class="space-y-1 max-w-[70%]">
+<div class="flex items-center gap-1.5">
+<span class="font-headline font-bold text-sm text-charcoal">Pre-order Spring Mustard</span>
+<span class="text-[9px] bg-[#E7DFC9] text-charcoal font-mono px-1.5 py-0.2 rounded">Mar 2027</span>
+</div>
+<p class="text-xs text-secondary">Early reserve discount. Backed by live brood expansion records.</p>
+</div>
+<div class="text-right">
+<div class="font-mono font-bold text-sm text-charcoal">₹550<span class="text-[10px] text-secondary">/jar</span></div>
+<button class="mt-2 text-xs border border-parchment-border text-charcoal hover:border-honey px-3 py-1.5 rounded font-label font-medium transition-colors">Reserve</button>
+</div>
+</div>
+</div>
+</section>
+<!-- TRUST & SAFETY: NOTICEABLE FLAGGED PROTOCOL BANNER -->
+<section class="space-y-2 pt-1">
+<!-- Tamper-Evident Protocol Notice Banner -->
+<div class="bg-[#FAF2ED] border-l-4 border-status-warning border-y border-r border-parchment-border rounded-lg p-3.5 shadow-sm">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-status-warning text-[20px] shrink-0 mt-0.5" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div class="space-y-1">
+<h4 class="font-label font-bold text-xs text-status-warning tracking-wide">
+                ▲ Tamper-Evident Protocol Notice
+              </h4>
+<p class="text-[11px] text-secondary leading-relaxed">
+                If holographic cap seal hash does not match your jar's NFC scan, flag for instantaneous lot recall and smart contract escrow hold.
+              </p>
+</div>
+</div>
+</div>
+<!-- Batch ID & Verification Action -->
+<div class="bg-parchment-surface border border-parchment-border rounded-lg p-3 flex items-center justify-between">
+<div class="space-y-0.5">
+<span class="text-[10px] text-secondary font-label">Unique Provenance ID</span>
+<div class="font-mono font-bold text-xs text-charcoal">HC-MP04-A3F1-26-0007</div>
+</div>
+<a class="inline-flex items-center gap-1 text-xs font-semibold text-honey-dark hover:text-honey transition-colors" href="#verify-chain">
+<span>Verify on Chain &amp; Sensor Log</span>
+<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</a>
+</div>
+</section>
+<!-- BOTTOM SECTION: MORE BATCHES FROM SAME BEEKEEPER -->
+<section class="space-y-2.5 pt-2">
+<div class="flex items-center justify-between px-1">
+<h3 class="font-headline font-bold text-base text-charcoal">From Rameshwar Thakur</h3>
+<a class="text-xs text-honey-dark font-medium hover:underline" href="#apiary-profile">View Apiary</a>
+</div>
+<!-- Horizontal scrollable tray of related batches -->
+<div class="flex space-x-3 overflow-x-auto pb-2 hide-scrollbar -mx-4 px-4">
+<!-- Related Batch 1 -->
+<div class="min-w-[210px] max-w-[210px] bg-parchment-surface border border-parchment-border rounded-lg p-3 shadow-sm flex flex-col justify-between space-y-2">
+<div>
+<div class="flex justify-between items-center text-[10px] font-mono text-secondary mb-1">
+<span>Batch #8819</span>
+<span class="text-honey-dark font-medium">8 jars left</span>
+</div>
+<h4 class="font-headline font-semibold text-xs text-charcoal line-clamp-1">Himalayan White Clover</h4>
+<p class="text-[11px] text-secondary mt-0.5 font-mono">250g Jar</p>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-parchment-border/60">
+<span class="font-mono font-bold text-xs text-charcoal">₹360</span>
+<button class="text-[11px] bg-honey/15 hover:bg-honey hover:text-white text-honey-dark font-medium px-2 py-1 rounded transition-colors">View</button>
+</div>
+</div>
+<!-- Related Batch 2 -->
+<div class="min-w-[210px] max-w-[210px] bg-parchment-surface border border-parchment-border rounded-lg p-3 shadow-sm flex flex-col justify-between space-y-2 opacity-90">
+<div>
+<div class="flex justify-between items-center text-[10px] font-mono text-secondary mb-1">
+<span>Batch #8802</span>
+<span class="text-status-critical font-medium">! Sold Out</span>
+</div>
+<h4 class="font-headline font-semibold text-xs text-charcoal line-clamp-1">Wild Forest Strobilanthes</h4>
+<p class="text-[11px] text-secondary mt-0.5 font-mono">500g Jar</p>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-parchment-border/60">
+<span class="font-mono font-bold text-xs text-charcoal">₹720</span>
+<button class="text-[11px] border border-parchment-border hover:border-honey text-secondary hover:text-charcoal font-medium px-2 py-1 rounded transition-colors">Pre-order</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Compact Mobile Footer -->
+<footer class="pt-4 pb-6 text-center space-y-1.5 border-t border-parchment-border/50">
+<div class="flex items-center justify-center gap-1.5 text-xs font-headline font-bold text-wood">
+<span class="material-symbols-outlined text-[16px] text-honey">hive</span>
+<span>HoneyChain Provenance Protocol</span>
+</div>
+<p class="text-[10px] text-secondary font-mono">Decentralized Apiculture Ledger • Polygon PoS Mainnet</p>
 </footer>
+</main>
+<!-- SHARED COMPONENT: BottomNavBar (from JSON specs) -->
+<!-- Destination Context Check: Marketplace Product Detail page maps to "Market" destination -->
+<nav class="bg-[#5C3D2E] dark:bg-[#4A2F22] docked full-width bottom-0 border-t border-[#4A2F22] shadow-md fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-1 pb-safe">
+<!-- 1. Market (Active Tab for this buying/harvest page) -->
+<a class="flex flex-col items-center justify-center text-[#E8A33D] font-medium py-1 active:scale-95 transition-transform duration-150 hover:text-[#E8A33D]" href="#market">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">storefront</span>
+<span class="font-body text-xs tracking-normal mt-0.5">Market</span>
+</a>
+<!-- 2. Trace -->
+<a class="flex flex-col items-center justify-center text-[#F6F1E4]/70 font-normal py-1 active:scale-95 transition-transform duration-150 hover:text-[#E8A33D]" href="#trace">
+<span class="material-symbols-outlined text-[22px]">hive</span>
+<span class="font-body text-xs tracking-normal mt-0.5">Trace</span>
+</a>
+<!-- 3. Dashboard -->
+<a class="flex flex-col items-center justify-center text-[#F6F1E4]/70 font-normal py-1 active:scale-95 transition-transform duration-150 hover:text-[#E8A33D]" href="#dashboard">
+<span class="material-symbols-outlined text-[22px]">monitoring</span>
+<span class="font-body text-xs tracking-normal mt-0.5">Dashboard</span>
+</a>
+<!-- 4. Verify -->
+<a class="flex flex-col items-center justify-center text-[#F6F1E4]/70 font-normal py-1 active:scale-95 transition-transform duration-150 hover:text-[#E8A33D]" href="#verify">
+<span class="material-symbols-outlined text-[22px]">verified_user</span>
+<span class="font-body text-xs tracking-normal mt-0.5">Verify</span>
+</a>
+<!-- 5. Hive -->
+<a class="flex flex-col items-center justify-center text-[#F6F1E4]/70 font-normal py-1 active:scale-95 transition-transform duration-150 hover:text-[#E8A33D]" href="#hive">
+<span class="material-symbols-outlined text-[22px]">person</span>
+<span class="font-body text-xs tracking-normal mt-0.5">Hive</span>
+</a>
+</nav>
+</div>
+<!-- Micro-interaction Script for Size Selection -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sizeButtons = document.querySelectorAll('#size-selector button');
+      sizeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          sizeButtons.forEach(b => {
+            b.className = "border border-parchment-border bg-parchment hover:border-honey rounded-lg p-2 text-center transition-all";
+            const badge = b.querySelector('span');
+            if (badge) badge.remove();
+          });
+          btn.className = "border-2 border-honey bg-honey/10 rounded-lg p-2 text-center relative shadow-sm";
+          const newBadge = document.createElement('span');
+          newBadge.className = "absolute -top-2 left-1/2 -translate-x-1/2 bg-honey text-white text-[9px] font-label font-bold px-1.5 py-0.2 rounded-full uppercase tracking-tighter";
+          newBadge.textContent = "Selected";
+          btn.appendChild(newBadge);
+        });
+      });
+    });
+  </script>
 </body></html>
-
-
