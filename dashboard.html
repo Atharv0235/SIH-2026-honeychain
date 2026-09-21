@@ -1,0 +1,659 @@
+﻿<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HoneyChain — Live Telemetry Dashboard</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Public+Sans:wght@400;500;600&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration verbatim -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {},
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {},
+          "fontFamily": {
+            "headline": [
+              "\"Source Serif 4\""
+            ],
+            "display": [
+              "\"Source Serif 4\""
+            ],
+            "body": [
+              "Inter"
+            ],
+            "label": [
+              "Public Sans"
+            ],
+            "mono": [
+              "\"JetBrains Mono\"",
+              "monospace"
+            ]
+          },
+          "fontSize": {}
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    
+    /* Honeycomb Fixed SVG Pattern Overlay */
+    .bg-honeycomb-parchment {
+      background-color: #F6F1E4;
+      background-image: radial-gradient(#E8DCC3 1px, transparent 1px),
+                        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cpath d='M28 0 L56 16.16 L56 48.5 L28 64.66 L0 48.5 L0 16.16 Z M28 97 L56 80.84 L56 48.5 L28 64.66 L0 48.5 L0 80.84 Z' fill='none' stroke='%23E8DCC3' stroke-width='0.75' stroke-opacity='0.35'/%3E%3C/svg%3E");
+      background-attachment: fixed;
+    }
+
+    /* Orbital Hex Nodes Animation */
+    @keyframes subtle-pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.02); opacity: 0.95; }
+    }
+    .node-hover {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .node-hover:hover {
+      transform: translateY(-2px) scale(1.04);
+      filter: drop-shadow(0 6px 14px rgba(92, 61, 46, 0.12));
+    }
+  </style>
+</head>
+<body class="bg-honeycomb-parchment text-[#201C14] font-body min-h-screen flex flex-col antialiased selection:bg-[#E8A33D]/20 selection:text-[#5C3D2E]">
+<!-- ========================================================================= -->
+<!-- TOP APP BAR (Shared Components JSON Anchor: TopNavBar)                    -->
+<!-- ========================================================================= -->
+<header class="docked full-width top-0 sticky z-50 bg-[#5C3D2E] dark:bg-[#4A2F22] shadow-md border-b border-[#4A2F22]/40 transition-colors">
+<div class="flex justify-between items-center w-full px-6 md:px-12 py-3.5 max-w-7xl mx-auto">
+<!-- Brand Logo / Wordmark -->
+<a class="flex items-center gap-2.5 group" href="#">
+<span class="w-3 h-3 rounded-full bg-[#E8A33D] shadow-[0_0_10px_#E8A33D] ring-2 ring-[#E8A33D]/30 transition-transform group-hover:scale-110"></span>
+<span class="font-headline text-xl font-bold text-[#F6F1E4] tracking-tight">HoneyChain</span>
+</a>
+<!-- Desktop Navigation Links -->
+<nav class="hidden lg:flex items-center gap-7">
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="index.html">Home</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="problem.html">Problem</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="architecture.html">Architecture</a>
+<a class="text-[#E8A33D] font-medium transition-colors relative py-1 text-sm" href="dashboard.html">
+          Dashboard
+          <span class="absolute bottom-0 left-0 w-full h-[2px] bg-[#E8A33D] rounded-full"></span>
+</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="traceability.html">Traceability</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="verify.html">Verify</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="marketplace.html">Marketplace</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="economics.html">Economics</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="team.html">Team</a>
+</nav>
+<!-- Trailing Action / Pill Badge -->
+<div class="flex items-center gap-3">
+<div class="border border-[#E8DCC3]/30 text-[#F6F1E4]/90 text-xs px-3.5 py-1.5 rounded-full bg-[#4A2F22]/60 font-label tracking-wide flex items-center gap-1.5 shadow-inner">
+<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D]"></span>
+<span>Team Brain Hustlers · SIH 2026</span>
+</div>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN DASHBOARD CONTENT AREA                                               -->
+<!-- ========================================================================= -->
+<main class="flex-grow w-full max-w-7xl mx-auto px-6 md:px-12 py-8 space-y-8">
+<!-- Header & Metadata Bar -->
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-2 border-b border-[#E7DFC9]/70">
+<div class="space-y-2">
+<div class="flex items-center gap-2 text-xs font-mono text-[#6B6455]">
+<span>Ministry of MSME &amp; KVIC</span>
+<span class="text-[#E8DCC3]">/</span>
+<span>Smart India Hackathon 2026</span>
+<span class="text-[#E8DCC3]">/</span>
+<span class="text-[#5C3D2E] font-semibold">Field Station #04 Dehradun</span>
+</div>
+<div class="flex flex-wrap items-center gap-3.5">
+<h1 class="font-headline text-3xl md:text-4xl font-bold text-[#201C14] tracking-tight">Live Dashboard</h1>
+<div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-800 text-xs font-medium">
+<span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+<span class="tracking-wide text-[11px] font-mono">LIVE TELEMETRY STREAMING</span>
+</div>
+</div>
+<p class="text-sm text-[#6B6455] max-w-2xl">
+          Real-time hive pod health, sensor telemetry feeds, edge-to-chain batch pipeline synchronization, and seasonal weight monitoring.
+        </p>
+</div>
+<!-- Controls Right -->
+<div class="flex flex-wrap items-center gap-3">
+<!-- Pod Selector -->
+<div class="relative inline-flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-sm text-[#6B6455]">hive</span>
+<select class="pl-8 pr-9 py-2 bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg text-xs font-medium text-[#201C14] shadow-xs focus:ring-1 focus:ring-[#E8A33D] focus:border-[#E8A33D] appearance-none cursor-pointer">
+<option selected="">Pod #04 - Dehradun Valley</option>
+<option>Pod #01 - Nilgiri Reserve</option>
+<option>Pod #02 - Sundarbans Mangrove</option>
+<option>Pod #03 - Himachal Highlands</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 text-sm text-[#6B6455] pointer-events-none">expand_more</span>
+</div>
+<!-- Sync Indicator -->
+<div class="flex items-center gap-1.5 px-3 py-2 bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg text-xs font-mono text-[#6B6455]">
+<span class="material-symbols-outlined text-xs text-[#E8A33D] animate-spin" style="animation-duration: 4s;">sync</span>
+<span>Auto-syncing 15s</span>
+</div>
+<!-- Export Action -->
+<button class="flex items-center gap-1.5 px-3.5 py-2 bg-[#FBF8F0] hover:bg-[#F6F1E4] border border-[#E7DFC9] hover:border-[#E8A33D] rounded-lg text-xs font-medium text-[#201C14] transition-all shadow-xs">
+<span class="material-symbols-outlined text-sm">download</span>
+<span>Export CSV / JSON</span>
+</button>
+</div>
+</div>
+<!-- ======================================================================= -->
+<!-- SECTION 1: TOP STAT STRIP (4 Stat Tiles)                                 -->
+<!-- ======================================================================= -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Tile 1 -->
+<div class="bg-[#FCFAF6] border border-[#E8DCC3]/80 rounded-xl p-5 shadow-xs transition-transform hover:-translate-y-0.5">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-medium text-[#6B6455]">Hives online</span>
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm"></span>
+</div>
+<div class="font-mono text-2xl font-bold text-[#201C14] mb-1">3 / 3</div>
+<div class="text-xs font-body text-emerald-700 font-medium">100% mesh operational</div>
+</div>
+<!-- Tile 2 -->
+<div class="bg-[#FCFAF6] border border-[#E8DCC3]/80 rounded-xl p-5 shadow-xs transition-transform hover:-translate-y-0.5">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-medium text-[#6B6455]">Sensors streaming</span>
+<span class="material-symbols-outlined text-[#E8A33D] text-lg">settings_input_antenna</span>
+</div>
+<div class="font-mono text-2xl font-bold text-[#201C14] mb-1">12</div>
+<div class="text-xs font-body text-[#6B6455]">Active LoRaWAN / ESP-NOW streams</div>
+</div>
+<!-- Tile 3 -->
+<div class="bg-[#FCFAF6] border border-[#E8DCC3]/80 rounded-xl p-5 shadow-xs transition-transform hover:-translate-y-0.5">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-medium text-[#6B6455]">Batches on chain</span>
+<span class="material-symbols-outlined text-[#E8A33D] text-lg">token</span>
+</div>
+<div class="font-mono text-2xl font-bold text-[#201C14] mb-1">0</div>
+<div class="text-xs font-body text-[#6B6455]">Polygon testnet verified</div>
+</div>
+<!-- Tile 4 -->
+<div class="bg-[#FCFAF6] border border-[#E8DCC3]/80 rounded-xl p-5 shadow-xs transition-transform hover:-translate-y-0.5">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-medium text-[#6B6455]">Consumer scans</span>
+<span class="material-symbols-outlined text-[#E8A33D] text-lg">qr_code_scanner</span>
+</div>
+<div class="font-mono text-2xl font-bold text-[#201C14] mb-1">0</div>
+<div class="text-xs font-body text-[#6B6455]">Unique QR verifications</div>
+</div>
+</div>
+<!-- ======================================================================= -->
+<!-- SECTION 2: MAIN DASHBOARD AREA (Hex Pod Topology & Pipeline Status)     -->
+<!-- ======================================================================= -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- LEFT 8 COLS: HEX-GRID POD TOPOLOGY COMPONENT -->
+<div class="lg:col-span-8 bg-[#FCFAF6] border border-[#E8DCC3] rounded-xl p-6 lg:p-7 shadow-xs">
+<!-- Topology Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#E7DFC9]">
+<div>
+<h2 class="font-headline text-xl font-bold text-[#201C14]">The Apiary Pod Architecture - Pod #04 Dehradun Valley</h2>
+<p class="text-xs text-[#6B6455] mt-0.5">Ten ESP-NOW mesh hive nodes orbiting one autonomous solar-powered Edge Hub. Click any node for telemetry.</p>
+</div>
+<!-- Status count pills -->
+<div class="flex flex-wrap items-center gap-2">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-[#E8A33D]/60 bg-[#E8A33D]/10 text-xs font-mono text-[#5C3D2E]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D]"></span> Healthy (8)
+            </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-[#D4901F]/60 bg-[#D4901F]/10 text-xs font-mono text-[#8C5D0F]">
+<span>~</span> Moderate (1)
+            </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-[#C9622E]/60 bg-[#C9622E]/10 text-xs font-mono text-[#C9622E]">
+<span>▲</span> Warning (1)
+            </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-[#A6371F]/60 bg-[#A6371F]/10 text-xs font-mono text-[#A6371F]">
+<span>!</span> Critical (1)
+            </span>
+</div>
+</div>
+<!-- Interactive Topology Visualization Canvas -->
+<div class="relative w-full aspect-[4/3] max-h-[540px] my-6 flex items-center justify-center overflow-hidden rounded-lg bg-[#F6F1E4]/50 border border-[#E7DFC9]/50">
+<!-- SVG Connecting Dashed Orbit Rays & Orbit Rings -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" fill="none" viewbox="0 0 700 520" xmlns="http://www.w3.org/2000/svg">
+<!-- Concentric orbit rings -->
+<circle cx="350" cy="260" opacity="0.8" r="135" stroke="#E8DCC3" stroke-dasharray="4 4" stroke-width="1.2"></circle>
+<circle cx="350" cy="260" opacity="0.5" r="215" stroke="#E8DCC3" stroke-dasharray="6 6" stroke-width="1.2"></circle>
+<!-- Radial Connectors to 10 Nodes -->
+<!-- 10 angles in radians: 0, 36, 72, 108, 144, 180, 216, 252, 288, 324 deg -->
+<!-- Radius R=205. Center = (350, 260) -->
+<line stroke="#E8DCC3" stroke-dasharray="3 3" stroke-width="1.5" x1="350" x2="555" y1="260" y2="260"></line>
+<line stroke="#E8DCC3" stroke-dasharray="3 3" stroke-width="1.5" x1="350" x2="515" y1="260" y2="380"></line>
+<line stroke="#E8DCC3" stroke-dasharray="3 3" stroke-width="1.5" x1="350" x2="413" y1="260" y2="455"></line>
+<line stroke="#E8DCC3" stroke-dasharray="3 3" stroke-width="1.5" x1="350" x2="286" y1="260" y2="455"></line>
+<line stroke="#E8DCC3" stroke-dasharray="3 3" stroke-width="1.5" x1="350" x2="184" y1="260" y2="380"></line>
+<line stroke="#E8DCC3" stroke-dasharray="3 3" stroke-width="1.5" x1="350" x2="145" y1="260" y2="260"></line>
+<line stroke="#C9622E" stroke-dasharray="3 3" stroke-opacity="0.8" stroke-width="1.5" x1="350" x2="184" y1="260" y2="139"></line>
+<line stroke="#E8DCC3" stroke-dasharray="3 3" stroke-width="1.5" x1="350" x2="286" y1="260" y2="65"></line>
+<line stroke="#E8DCC3" stroke-dasharray="3 3" stroke-width="1.5" x1="350" x2="413" y1="260" y2="65"></line>
+<line stroke="#A6371F" stroke-dasharray="3 3" stroke-opacity="0.9" stroke-width="2" x1="350" x2="515" y1="260" y2="139"></line>
+</svg>
+<!-- Central Pod Hub -->
+<div class="relative z-20 flex flex-col items-center justify-center p-3.5 rounded-2xl bg-[#5C3D2E] border-2 border-[#E8A33D] text-[#F6F1E4] shadow-xl text-center w-44">
+<div class="w-8 h-8 rounded-full bg-[#E8A33D]/20 text-[#E8A33D] flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-lg">router</span>
+</div>
+<div class="font-headline font-bold text-sm tracking-wide">Pod Hub #04</div>
+<div class="text-[10px] text-[#E8DCC3]/80 font-mono mt-0.5">4G · Solar · SD</div>
+<div class="text-[9px] text-[#E8A33D] font-mono mt-0.5 bg-[#4A2F22] px-2 py-0.5 rounded border border-[#E8A33D]/30">
+              0x7c9a...110e
+            </div>
+</div>
+<!-- 10 Circular Orbiting Nodes (Absolute Coordinates based on 700x520 scale translated to %) -->
+<!-- Node 1 (0° Right): H-01 -->
+<div class="absolute node-hover cursor-pointer z-10" style="left: 77%; top: 50%; transform: translate(-50%, -50%);">
+<div class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-xl p-2.5 text-center shadow-sm w-28 hover:border-[#E8A33D]">
+<div class="flex items-center justify-between text-[11px] font-mono font-semibold text-[#201C14]">
+<span>H-01</span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D]"></span>
+</div>
+<div class="font-mono text-xs text-[#5C3D2E] font-bold mt-0.5">38.2 kg</div>
+<div class="text-[9px] font-medium text-[#E8A33D] bg-[#E8A33D]/10 rounded px-1.5 py-0.5 mt-1 border border-[#E8A33D]/30">Healthy</div>
+</div>
+</div>
+<!-- Node 2 (36° Bottom-Right): H-02 -->
+<div class="absolute node-hover cursor-pointer z-10" style="left: 72%; top: 73%; transform: translate(-50%, -50%);">
+<div class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-xl p-2.5 text-center shadow-sm w-28 hover:border-[#E8A33D]">
+<div class="flex items-center justify-between text-[11px] font-mono font-semibold text-[#201C14]">
+<span>H-02</span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D]"></span>
+</div>
+<div class="font-mono text-xs text-[#5C3D2E] font-bold mt-0.5">41.0 kg</div>
+<div class="text-[9px] font-medium text-[#E8A33D] bg-[#E8A33D]/10 rounded px-1.5 py-0.5 mt-1 border border-[#E8A33D]/30">Healthy</div>
+</div>
+</div>
+<!-- Node 3 (72° Bottom-Center-Right): H-03 (Moderate) -->
+<div class="absolute node-hover cursor-pointer z-10" style="left: 58%; top: 87%; transform: translate(-50%, -50%);">
+<div class="bg-[#FBF8F0] border border-[#D4901F]/60 rounded-xl p-2.5 text-center shadow-sm w-28 hover:border-[#D4901F]">
+<div class="flex items-center justify-between text-[11px] font-mono font-semibold text-[#201C14]">
+<span>H-03</span>
+<span class="text-[10px] text-[#D4901F] font-bold">~</span>
+</div>
+<div class="font-mono text-xs text-[#5C3D2E] font-bold mt-0.5">33.5 kg</div>
+<div class="text-[9px] font-medium text-[#D4901F] bg-[#D4901F]/10 rounded px-1.5 py-0.5 mt-1 border border-[#D4901F]/40">~ Moderate</div>
+</div>
+</div>
+<!-- Node 4 (108° Bottom-Center-Left): H-04 -->
+<div class="absolute node-hover cursor-pointer z-10" style="left: 41%; top: 87%; transform: translate(-50%, -50%);">
+<div class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-xl p-2.5 text-center shadow-sm w-28 hover:border-[#E8A33D]">
+<div class="flex items-center justify-between text-[11px] font-mono font-semibold text-[#201C14]">
+<span>H-04</span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D]"></span>
+</div>
+<div class="font-mono text-xs text-[#5C3D2E] font-bold mt-0.5">44.7 kg</div>
+<div class="text-[9px] font-medium text-[#E8A33D] bg-[#E8A33D]/10 rounded px-1.5 py-0.5 mt-1 border border-[#E8A33D]/30">Healthy</div>
+</div>
+</div>
+<!-- Node 5 (144° Bottom-Left): H-05 -->
+<div class="absolute node-hover cursor-pointer z-10" style="left: 26%; top: 73%; transform: translate(-50%, -50%);">
+<div class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-xl p-2.5 text-center shadow-sm w-28 hover:border-[#E8A33D]">
+<div class="flex items-center justify-between text-[11px] font-mono font-semibold text-[#201C14]">
+<span>H-05</span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D]"></span>
+</div>
+<div class="font-mono text-xs text-[#5C3D2E] font-bold mt-0.5">39.9 kg</div>
+<div class="text-[9px] font-medium text-[#E8A33D] bg-[#E8A33D]/10 rounded px-1.5 py-0.5 mt-1 border border-[#E8A33D]/30">Healthy</div>
+</div>
+</div>
+<!-- Node 6 (180° Left): H-06 -->
+<div class="absolute node-hover cursor-pointer z-10" style="left: 21%; top: 50%; transform: translate(-50%, -50%);">
+<div class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-xl p-2.5 text-center shadow-sm w-28 hover:border-[#E8A33D]">
+<div class="flex items-center justify-between text-[11px] font-mono font-semibold text-[#201C14]">
+<span>H-06</span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D]"></span>
+</div>
+<div class="font-mono text-xs text-[#5C3D2E] font-bold mt-0.5">36.1 kg</div>
+<div class="text-[9px] font-medium text-[#E8A33D] bg-[#E8A33D]/10 rounded px-1.5 py-0.5 mt-1 border border-[#E8A33D]/30">Healthy</div>
+</div>
+</div>
+<!-- Node 7 (216° Top-Left): H-07 (Warning ▲) -->
+<div class="absolute node-hover cursor-pointer z-10" style="left: 26%; top: 27%; transform: translate(-50%, -50%);">
+<div class="bg-[#FBF8F0] border border-[#C9622E]/80 rounded-xl p-2.5 text-center shadow-sm w-28 hover:border-[#C9622E]">
+<div class="flex items-center justify-between text-[11px] font-mono font-semibold text-[#201C14]">
+<span>H-07</span>
+<span class="text-[10px] text-[#C9622E] font-bold">▲</span>
+</div>
+<div class="font-mono text-xs text-[#5C3D2E] font-bold mt-0.5">30.8 kg</div>
+<div class="text-[9px] font-medium text-[#C9622E] bg-[#C9622E]/10 rounded px-1.5 py-0.5 mt-1 border border-[#C9622E]/40">▲ Warning</div>
+</div>
+</div>
+<!-- Node 8 (252° Top-Center-Left): H-08 -->
+<div class="absolute node-hover cursor-pointer z-10" style="left: 41%; top: 13%; transform: translate(-50%, -50%);">
+<div class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-xl p-2.5 text-center shadow-sm w-28 hover:border-[#E8A33D]">
+<div class="flex items-center justify-between text-[11px] font-mono font-semibold text-[#201C14]">
+<span>H-08</span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D]"></span>
+</div>
+<div class="font-mono text-xs text-[#5C3D2E] font-bold mt-0.5">42.3 kg</div>
+<div class="text-[9px] font-medium text-[#E8A33D] bg-[#E8A33D]/10 rounded px-1.5 py-0.5 mt-1 border border-[#E8A33D]/30">Healthy</div>
+</div>
+</div>
+<!-- Node 9 (288° Top-Center-Right): H-09 -->
+<div class="absolute node-hover cursor-pointer z-10" style="left: 58%; top: 13%; transform: translate(-50%, -50%);">
+<div class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-xl p-2.5 text-center shadow-sm w-28 hover:border-[#E8A33D]">
+<div class="flex items-center justify-between text-[11px] font-mono font-semibold text-[#201C14]">
+<span>H-09</span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D]"></span>
+</div>
+<div class="font-mono text-xs text-[#5C3D2E] font-bold mt-0.5">40.6 kg</div>
+<div class="text-[9px] font-medium text-[#E8A33D] bg-[#E8A33D]/10 rounded px-1.5 py-0.5 mt-1 border border-[#E8A33D]/30">Healthy</div>
+</div>
+</div>
+<!-- Node 10 (324° Top-Right): H-10 (Critical !) Highlighted Border -->
+<div class="absolute node-hover cursor-pointer z-20" style="left: 72%; top: 27%; transform: translate(-50%, -50%);">
+<div class="bg-[#FBF8F0] border-2 border-[#A6371F] rounded-xl p-2.5 text-center shadow-md w-32 ring-2 ring-[#A6371F]/20">
+<div class="flex items-center justify-between text-[11px] font-mono font-bold text-[#A6371F]">
+<span>H-10 (Sentinel)</span>
+<span class="text-xs">!</span>
+</div>
+<div class="font-mono text-xs text-[#A6371F] font-bold mt-0.5">27.4 kg</div>
+<div class="text-[9px] font-semibold text-[#A6371F] bg-[#A6371F]/15 rounded px-1.5 py-0.5 mt-1 border border-[#A6371F]/30 flex items-center justify-center gap-1">
+<span>! Critical</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Legend Bar Below -->
+<div class="pt-4 border-t border-[#E7DFC9] flex flex-wrap items-center justify-between text-xs text-[#6B6455] gap-4">
+<div class="flex flex-wrap items-center gap-5">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-[#E8A33D]"></span>
+<span class="font-medium text-[#201C14]">Healthy:</span>
+<span>Normal foraging</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="font-mono font-bold text-[#D4901F]">~</span>
+<span class="font-medium text-[#201C14]">Moderate:</span>
+<span>Stable tare</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="font-mono font-bold text-[#C9622E]">▲</span>
+<span class="font-medium text-[#201C14]">Warning:</span>
+<span>Mild depletion</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="font-mono font-bold text-[#A6371F]">!</span>
+<span class="font-medium text-[#201C14]">Critical:</span>
+<span>Inspection needed</span>
+</div>
+</div>
+<div class="text-[11px] font-mono text-[#6B6455]/80">
+            Mesh link protocol: ESP-NOW 2.4GHz
+          </div>
+</div>
+</div>
+<!-- RIGHT 4 COLS: PIPELINE STATUS & SENTINEL TELEMETRY -->
+<div class="lg:col-span-4 space-y-6">
+<!-- Pipeline Stepper Card -->
+<div class="bg-[#FCFAF6] border border-[#E8DCC3] rounded-xl p-6 shadow-xs">
+<div class="pb-4 mb-4 border-b border-[#E7DFC9]">
+<h3 class="font-headline text-lg font-bold text-[#201C14]">Latest Batch Pipeline</h3>
+<p class="text-xs text-[#6B6455] mt-0.5">Cryptographic batch state from comb tare to Polygon anchor.</p>
+</div>
+<!-- Stepper Flow -->
+<div class="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-3 before:w-0.5 before:bg-[#E8DCC3]">
+<!-- Step 1 -->
+<div class="relative">
+<div class="absolute -left-6 top-0.5 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center ring-4 ring-[#FCFAF6]">
+<span class="material-symbols-outlined text-xs">check</span>
+</div>
+<div class="font-medium text-xs text-[#201C14]">Saved on device</div>
+<p class="text-[11px] text-[#6B6455] mt-0.5 leading-relaxed">Recorded on hub, with device ID and hash. Visible to beekeeper.</p>
+<span class="inline-block mt-1 font-mono text-[10px] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                14:22:05 IST (Local SD log)
+              </span>
+</div>
+<!-- Step 2 -->
+<div class="relative">
+<div class="absolute -left-6 top-0.5 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center ring-4 ring-[#FCFAF6]">
+<span class="material-symbols-outlined text-xs">check</span>
+</div>
+<div class="font-medium text-xs text-[#201C14]">Synced to cloud</div>
+<p class="text-[11px] text-[#6B6455] mt-0.5 leading-relaxed">Backed up, checked for gaps. Visible to admins/buyers.</p>
+<span class="inline-block mt-1 font-mono text-[10px] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                14:23:10 IST (Edge gateway)
+              </span>
+</div>
+<!-- Step 3: Pending/Active -->
+<div class="relative">
+<div class="absolute -left-6 top-0.5 w-5 h-5 rounded-full bg-[#E8A33D] text-[#5C3D2E] flex items-center justify-center ring-4 ring-[#FCFAF6] animate-pulse">
+<span class="material-symbols-outlined text-xs animate-spin" style="animation-duration: 3s;">hourglass_top</span>
+</div>
+<div class="font-medium text-xs text-[#201C14]">Anchored on chain</div>
+<p class="text-[11px] text-[#6B6455] mt-0.5 leading-relaxed">Awaiting signal. Batch hash will be timestamped on blockchain.</p>
+<span class="inline-flex items-center gap-1 mt-1.5 font-mono text-[10px] text-[#8C5D0F] bg-[#E8A33D]/15 px-2 py-0.5 rounded-full border border-[#E8A33D]/40">
+<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D] animate-ping"></span>
+                Queued for next Polygon block
+              </span>
+</div>
+</div>
+</div>
+<!-- Selected Sentinel Node Quick-Card -->
+<div class="bg-[#FCFAF6] border-2 border-[#A6371F]/30 rounded-xl p-6 shadow-xs relative overflow-hidden">
+<div class="absolute top-0 right-0 transform translate-x-3 -translate-y-3 w-16 h-16 bg-[#A6371F]/10 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex items-center justify-between pb-3 mb-3 border-b border-[#E7DFC9]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#A6371F] text-lg">warning</span>
+<h3 class="font-headline font-bold text-sm text-[#201C14]">H-10 (Sentinel Hive)</h3>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#A6371F]/15 text-[#A6371F] border border-[#A6371F]/40">
+              CRITICAL STATE
+            </span>
+</div>
+<!-- Telemetry Grid -->
+<div class="grid grid-cols-2 gap-3 mb-5">
+<div class="p-3 bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg">
+<div class="text-[10px] font-label text-[#6B6455]">Total Hive Weight</div>
+<div class="font-mono text-base font-bold text-[#A6371F] mt-0.5">27.40 kg</div>
+<div class="text-[10px] font-mono text-[#A6371F]">-4.8 kg drop / 48h</div>
+</div>
+<div class="p-3 bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg">
+<div class="text-[10px] font-label text-[#6B6455]">Brood Core Temp</div>
+<div class="font-mono text-base font-bold text-[#201C14] mt-0.5">31.2°C</div>
+<div class="text-[10px] font-mono text-[#6B6455]">Target: 34.5°C</div>
+</div>
+<div class="p-3 bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg">
+<div class="text-[10px] font-label text-[#6B6455]">Internal Humidity</div>
+<div class="font-mono text-base font-bold text-[#201C14] mt-0.5">52% RH</div>
+<div class="text-[10px] font-mono text-[#6B6455]">Normal: 50–65%</div>
+</div>
+<div class="p-3 bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg">
+<div class="text-[10px] font-label text-[#6B6455]">Node Battery</div>
+<div class="font-mono text-base font-bold text-emerald-700 mt-0.5">3.28V</div>
+<div class="text-[10px] font-mono text-[#6B6455]">78% (Solar stable)</div>
+</div>
+</div>
+<!-- Sentinel Action CTA -->
+<button class="w-full bg-[#5C3D2E] hover:bg-[#4A2F22] text-[#F6F1E4] hover:text-[#E8A33D] py-2.5 px-4 rounded-lg text-xs font-semibold tracking-wide flex items-center justify-center gap-2 transition-all shadow-sm active:scale-98">
+<span class="material-symbols-outlined text-sm">cell_tower</span>
+<span>Dispatch Field SMS Alert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ======================================================================= -->
+<!-- SECTION 3: HIVE WEIGHT CHART (Full Width Flow Season Analysis)          -->
+<!-- ======================================================================= -->
+<div class="bg-[#FCFAF6] border border-[#E8DCC3] rounded-xl p-6 md:p-8 shadow-xs">
+<!-- Chart Header with Metrics -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-[#E7DFC9]">
+<div>
+<h2 class="font-headline text-xl font-bold text-[#201C14]">Hive Weight Over the Flow Season</h2>
+<p class="text-xs text-[#6B6455] mt-1">Continuous tare logging across July to November demonstrating nectar accumulation curve, environmental disruptions, and harvest extraction.</p>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<div class="px-3 py-1.5 bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg">
+<span class="text-[10px] font-medium text-[#6B6455] block">Peak Weight</span>
+<span class="font-mono text-xs font-bold text-[#201C14]">48.4 kg</span>
+</div>
+<div class="px-3 py-1.5 bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg">
+<span class="text-[10px] font-medium text-[#6B6455] block">Net Seasonal Yield</span>
+<span class="font-mono text-xs font-bold text-[#E8A33D]">20.2 kg / hive</span>
+</div>
+<div class="px-3 py-1.5 bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg">
+<span class="text-[10px] font-medium text-[#6B6455] block">Extraction Purity</span>
+<span class="font-mono text-xs font-bold text-emerald-700">99.4%</span>
+</div>
+</div>
+</div>
+<!-- Line Chart Graphic (SVG with Annotations) -->
+<div class="w-full mt-6 overflow-x-auto">
+<div class="min-w-[720px] h-[340px] relative">
+<svg class="w-full h-full" fill="none" viewbox="0 0 880 320" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<!-- Amber Area Gradient Fill -->
+<lineargradient id="amberGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#E8A33D" stop-opacity="0.22"></stop>
+<stop offset="100%" stop-color="#E8A33D" stop-opacity="0.00"></stop>
+</lineargradient>
+</defs>
+<!-- Horizontal Y-Gridlines and Labels -->
+<!-- 50kg (y=40) -->
+<line stroke="#E8DCC3" stroke-dasharray="3 3" stroke-width="1" x1="60" x2="840" y1="40" y2="40"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="11" text-anchor="end" x="45" y="44">50 kg</text>
+<!-- 40kg (y=95) -->
+<line stroke="#E8DCC3" stroke-dasharray="3 3" stroke-width="1" x1="60" x2="840" y1="95" y2="95"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="11" text-anchor="end" x="45" y="99">40 kg</text>
+<!-- 30kg (y=150) -->
+<line stroke="#E8DCC3" stroke-dasharray="3 3" stroke-width="1" x1="60" x2="840" y1="150" y2="150"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="11" text-anchor="end" x="45" y="154">30 kg</text>
+<!-- 20kg (y=205) -->
+<line stroke="#E8DCC3" stroke-dasharray="3 3" stroke-width="1" x1="60" x2="840" y1="205" y2="205"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="11" text-anchor="end" x="45" y="209">20 kg</text>
+<!-- 10kg (y=260) -->
+<line stroke="#E8DCC3" stroke-dasharray="3 3" stroke-width="1" x1="60" x2="840" y1="260" y2="260"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="11" text-anchor="end" x="45" y="264">10 kg</text>
+<!-- Base zero line (y=285) -->
+<line stroke="#E7DFC9" stroke-width="1.5" x1="60" x2="840" y1="285" y2="285"></line>
+<!-- Vertical Guides & X-Axis Labels -->
+<!-- Jul (x=100) -->
+<line stroke="#E8DCC3" stroke-opacity="0.4" stroke-width="1" x1="100" x2="100" y1="40" y2="285"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="12" text-anchor="middle" x="100" y="306">Jul</text>
+<!-- Aug (x=270) -->
+<line stroke="#E8DCC3" stroke-opacity="0.4" stroke-width="1" x1="270" x2="270" y1="40" y2="285"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="12" text-anchor="middle" x="270" y="306">Aug</text>
+<!-- Sep (x=450) -->
+<line stroke="#E8DCC3" stroke-opacity="0.4" stroke-width="1" x1="450" x2="450" y1="40" y2="285"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="12" text-anchor="middle" x="450" y="306">Sep</text>
+<!-- Oct (x=630) -->
+<line stroke="#E8DCC3" stroke-opacity="0.4" stroke-width="1" x1="630" x2="630" y1="40" y2="285"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="12" text-anchor="middle" x="630" y="306">Oct</text>
+<!-- Nov (x=800) -->
+<line stroke="#E8DCC3" stroke-opacity="0.4" stroke-width="1" x1="800" x2="800" y1="40" y2="285"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="12" text-anchor="middle" x="800" y="306">Nov</text>
+<!-- AREA UNDER CURVE -->
+<!-- Path matches data line and closes down at y=285 -->
+<path d="M 80,195 
+                     C 130,190 180,175 230,150 
+                     C 270,130 300,125 330,145 
+                     C 350,158 370,155 390,120 
+                     C 430,70 480,55 530,48 
+                     C 570,44 600,48 625,52 
+                     L 645,162 
+                     C 675,165 720,163 760,165 
+                     L 820,167 
+                     L 820,285 
+                     L 80,285 Z" fill="url(#amberGradient)"></path>
+<!-- MAIN AMBER LINE -->
+<!-- Starts around 22kg (~y=195), rises to 35kg (y=125), dip to 34kg (y=155) late Aug, peaks at 48.4kg (y=48) in Sep/Oct, sharp drops to 28kg (y=162) mid Oct, stabilizes Nov -->
+<path d="M 80,195 
+                     C 130,190 180,175 230,150 
+                     C 270,130 300,125 330,145 
+                     C 350,158 370,155 390,120 
+                     C 430,70 480,55 530,48 
+                     C 570,44 600,48 625,52 
+                     L 645,162 
+                     C 675,165 720,163 760,165 
+                     L 820,167" stroke="#E8A33D" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5"></path>
+<!-- Data Points -->
+<circle cx="80" cy="195" fill="#5C3D2E" r="4" stroke="#FCFAF6" stroke-width="2"></circle>
+<circle cx="230" cy="150" fill="#E8A33D" r="4" stroke="#FCFAF6" stroke-width="2"></circle>
+<!-- Dip Point (Late Aug) -->
+<circle cx="360" cy="157" fill="#C9622E" r="5" stroke="#FCFAF6" stroke-width="2"></circle>
+<!-- Peak Point (Late Sep) -->
+<circle cx="530" cy="48" fill="#E8A33D" r="5" stroke="#FCFAF6" stroke-width="2"></circle>
+<!-- Harvest drop point -->
+<circle cx="625" cy="52" fill="#5C3D2E" r="5" stroke="#FCFAF6" stroke-width="2"></circle>
+<circle cx="645" cy="162" fill="#10B981" r="5" stroke="#FCFAF6" stroke-width="2"></circle>
+<!-- Post-harvest -->
+<circle cx="820" cy="167" fill="#5C3D2E" r="4" stroke="#FCFAF6" stroke-width="2"></circle>
+<!-- ANNOTATION 1: Rainy day dip -->
+<line stroke="#C9622E" stroke-dasharray="2 2" stroke-width="1.5" x1="360" x2="360" y1="157" y2="215"></line>
+<!-- Annotation Box -->
+<g transform="translate(300, 215)">
+<rect fill="#FCFAF6" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.05))" height="38" rx="6" stroke="#C9622E" stroke-width="1" width="125" x="0" y="0"></rect>
+<text fill="#C9622E" font-family="'Inter', sans-serif" font-size="10" font-weight="600" x="10" y="16">Monsoon Rain Dip</text>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="9" x="10" y="30">-3.8 kg confinement</text>
+</g>
+<!-- ANNOTATION 2: Harvest Extraction -->
+<line stroke="#5C3D2E" stroke-dasharray="2 2" stroke-width="1.5" x1="635" x2="635" y1="107" y2="35"></line>
+<!-- Annotation Box -->
+<g transform="translate(620, 15)">
+<rect fill="#FCFAF6" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.05))" height="42" rx="6" stroke="#5C3D2E" stroke-width="1" width="145" x="0" y="0"></rect>
+<text fill="#5C3D2E" font-family="'Inter', sans-serif" font-size="10" font-weight="600" x="10" y="16">Honey Harvest Extraction</text>
+<text fill="#E8A33D" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="600" x="10" y="31">48kg → 28kg (-20.4 kg)</text>
+</g>
+<!-- Post-harvest stabilization curve text -->
+<g transform="translate(680, 190)">
+<text fill="#6B6455" font-family="'Inter', sans-serif" font-size="10" font-weight="500" x="0" y="0">Post-harvest Tare</text>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="9" x="0" y="14">Winter comb reserve</text>
+</g>
+</svg>
+</div>
+</div>
+</div>
+</main>
+<!-- ========================================================================= -->
+<!-- BLUEPRINT FOOTER (Shared Components JSON Anchor: Footer)                  -->
+<!-- ========================================================================= -->
+<footer class="bg-[#201C14] dark:bg-[#15120C] text-[#E8DCC3] docked full-width bottom-0 border-t border-[#E8DCC3]/20">
+<div class="w-full px-6 md:px-12 py-10 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+<!-- Left: Brand Logo & Copyright -->
+<div class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded bg-[#E8A33D] text-[#201C14] flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">hexagon</span>
+</span>
+<span class="font-headline text-base font-bold text-[#F6F1E4]">HoneyChain</span>
+</div>
+<div class="text-xs text-[#E8DCC3]/60 font-body">
+          © 2025 HoneyChain. Decentralized Apiculture &amp; Honey Provenance Architecture.
+        </div>
+</div>
+<!-- Right: Blueprint Specification Links -->
+<div class="flex flex-wrap justify-center items-center gap-5 text-xs text-[#E8DCC3]/70 font-mono">
+<a class="hover:text-[#E8A33D] transition-colors duration-150" href="#">Architecture Blueprint</a>
+<a class="hover:text-[#E8A33D] transition-colors duration-150" href="#">Smart Contracts</a>
+<a class="hover:text-[#E8A33D] transition-colors duration-150" href="#">Telemetry Specs</a>
+<a class="hover:text-[#E8A33D] transition-colors duration-150" href="#">Hackathon Submission</a>
+<a class="hover:text-[#E8A33D] transition-colors duration-150" href="#">Node Registry</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,984 @@
+﻿<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HoneyChain — System Architecture Blueprint</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Public+Sans:wght@400;500;600&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {},
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {},
+          fontFamily: {
+            headline: ["\"Source Serif 4\"", "serif"],
+            display: ["\"Source Serif 4\"", "serif"],
+            body: ["Inter", "sans-serif"],
+            label: ["Public Sans", "sans-serif"],
+            mono: ["\"JetBrains Mono\"", "monospace"]
+          },
+          fontSize: {}
+        },
+      },
+    }
+  </script>
+<style>
+    /* Fixed background pattern */
+    .honey-bg-fixed {
+      background-color: #F6F1E4;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='207.846' viewBox='0 0 120 207.846'%3E%3Cpath d='M60 0 L120 34.641 L120 103.923 L60 138.564 L0 103.923 L0 34.641 Z M60 207.846 L120 173.205 L120 103.923 L60 138.564 L0 103.923 L0 173.205 Z' fill='none' stroke='%23E8DCC3' stroke-width='1' stroke-opacity='0.35'/%3E%3C/svg%3E");
+      background-attachment: fixed;
+    }
+
+    /* Hexagon clipping */
+    .clip-hex {
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    }
+
+    /* Pulse animations for status */
+    @keyframes pulse-critical {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.03); }
+    }
+    .animate-pulse-crit {
+      animation: pulse-critical 2s infinite ease-in-out;
+    }
+
+    /* Initial hero reveal */
+    .reveal-load {
+      animation: fadeInHero 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes fadeInHero {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="honey-bg-fixed text-[#201C14] font-body antialiased min-h-screen flex flex-col selection:bg-[#E8A33D]/20 selection:text-[#5C3D2E]">
+<!-- TopNavBar (Shared Component) -->
+<header class="docked full-width top-0 sticky z-50 bg-[#5C3D2E] dark:bg-[#4A2F22] shadow-md border-b border-[#4A2F22]/40 transition-colors">
+<div class="flex justify-between items-center w-full px-6 md:px-12 py-3.5 max-w-7xl mx-auto">
+<!-- Brand Logo / Wordmark -->
+<a class="flex items-center gap-2.5 group" href="#">
+<span class="w-3 h-3 rounded-full bg-[#E8A33D] shadow-[0_0_10px_#E8A33D] ring-2 ring-[#E8A33D]/30 transition-transform group-hover:scale-110"></span>
+<span class="font-headline text-xl font-bold text-[#F6F1E4] tracking-tight">HoneyChain</span>
+</a>
+<!-- Desktop Navigation Links -->
+<nav class="hidden lg:flex items-center gap-7">
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="index.html">Home</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="problem.html">Problem</a>
+<a class="text-[#E8A33D] font-medium transition-colors relative py-1 text-sm" href="architecture.html">
+          Architecture
+          <span class="absolute bottom-0 left-0 w-full h-[2px] bg-[#E8A33D] rounded-full"></span>
+</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="dashboard.html">Dashboard</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="traceability.html">Traceability</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="verify.html">Verify</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="marketplace.html">Marketplace</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="economics.html">Economics</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="team.html">Team</a>
+</nav>
+<!-- Trailing Action / Pill Badge -->
+<div class="flex items-center gap-3">
+<div class="border border-[#E8DCC3]/30 text-[#F6F1E4]/90 text-xs px-3.5 py-1.5 rounded-full bg-[#4A2F22]/60 font-label tracking-wide flex items-center gap-1.5 shadow-inner">
+<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D]"></span>
+<span>Team Brain Hustlers · SIH 2026</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Architecture Canvas -->
+<main class="flex-grow w-full max-w-7xl mx-auto px-6 md:px-12 py-10 reveal-load">
+<!-- Header & Breadcrumb -->
+<section class="mb-12">
+<div class="flex flex-wrap items-center gap-2 text-xs font-mono text-[#6B6455] mb-3">
+<span>Ministry of MSME &amp; KVIC</span>
+<span>/</span>
+<span>Smart India Hackathon 2026</span>
+<span>/</span>
+<span class="text-[#201C14] font-medium">Architecture Blueprint v2.4</span>
+</div>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[#E7DFC9]">
+<div>
+<h1 class="font-headline text-3xl md:text-4xl lg:text-5xl font-bold text-[#201C14] tracking-tight">
+            System Architecture
+          </h1>
+<p class="font-body text-base md:text-lg text-[#6B6455] mt-2 max-w-2xl">
+            Five layers from hive sensor to consumer verification.
+          </p>
+</div>
+<!-- Metadata Badges -->
+<div class="flex flex-wrap items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#E7DFC9] bg-[#FBF8F0] text-xs font-mono text-[#6B6455]">
+<span class="w-2 h-2 rounded-full bg-[#E8A33D]"></span>
+            Topology: 10-Hive Pod + Central Edge Hub
+          </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#E7DFC9] bg-[#FBF8F0] text-xs font-mono text-[#6B6455]">
+<span class="material-symbols-outlined text-xs text-[#E8A33D]" data-icon="deployed_code">deployed_code</span>
+            Polygon PoS Anchor
+          </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#E7DFC9] bg-[#FBF8F0] text-xs font-mono text-[#6B6455]">
+<span class="material-symbols-outlined text-xs text-[#E8A33D]" data-icon="wifi_off">wifi_off</span>
+            Offline-First ESP-NOW
+          </span>
+</div>
+</div>
+</section>
+<!-- SECTION 1: FIVE-LAYER ARCHITECTURE ACCORDION -->
+<section class="mb-16">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h2 class="font-headline text-2xl font-bold text-[#201C14]">Five-Layer Stacked Architecture</h2>
+<p class="text-sm text-[#6B6455] mt-0.5">End-to-end data pipeline from physical comb vibrations to decentralized retail.</p>
+</div>
+<button class="text-xs font-mono text-[#E8A33D] hover:text-[#C97A2B] transition-colors border border-[#E8A33D]/40 rounded-full px-3 py-1 bg-[#FBF8F0]" id="toggle-all-btn">
+          Expand All Layers
+        </button>
+</div>
+<div class="space-y-4" id="accordion-container">
+<!-- Layer 1 -->
+<div class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg shadow-sm transition-all overflow-hidden layer-item">
+<button class="w-full px-6 py-5 text-left flex items-start md:items-center justify-between gap-4 focus:outline-none layer-trigger" data-layer="1">
+<div class="flex items-start md:items-center gap-4">
+<span class="flex-shrink-0 w-8 h-8 rounded-lg bg-[#5C3D2E]/10 border border-[#5C3D2E]/20 text-[#5C3D2E] flex items-center justify-center font-mono font-bold text-sm">
+                01
+              </span>
+<div>
+<div class="flex items-center gap-2.5">
+<h3 class="font-headline text-lg font-bold text-[#201C14]">Smart Hive Layer</h3>
+<span class="text-xs font-mono px-2 py-0.5 rounded-full border border-[#E8A33D]/50 text-[#5C3D2E] bg-[#E8A33D]/10">Edge In-Comb Sensing</span>
+</div>
+<p class="text-sm text-[#6B6455] mt-1">Ten hive nodes report weight, in-hive temperature and humidity. One hub collects everything.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#6B6455] transition-transform duration-200 layer-icon" data-icon="expand_more">expand_more</span>
+</button>
+<div class="px-6 pb-6 pt-2 border-t border-[#E7DFC9]/60 layer-content hidden">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+<div>
+<h4 class="text-xs font-mono font-semibold text-[#201C14] uppercase tracking-wider mb-2">Hardware &amp; Sensors</h4>
+<p class="text-sm text-[#6B6455] leading-relaxed">
+                  ESP32-C3 nodes, HX711 load cell amplifiers, SHT31 precision temp/humidity probes, 2.4GHz ESP-NOW mesh radio, optional acoustic microphone, predatory pest camera &amp; GPS geofencing. Designed for harsh tropical and sub-Himalayan apiary microclimates.
+                </p>
+</div>
+<div>
+<h4 class="text-xs font-mono font-semibold text-[#201C14] uppercase tracking-wider mb-2">Technical Specification</h4>
+<div class="p-3 bg-[#F6F1E4] rounded border border-[#E7DFC9] font-mono text-xs text-[#201C14] space-y-1">
+<div><span class="text-[#6B6455]">Stack:</span> ESP32-C3 · HX711 · SHT31 Probes · ESP-NOW · 18650 LiFePO4</div>
+<div><span class="text-[#6B6455]">Telemetry Cycle:</span> 15-min wake, deep sleep 15μA, ESP-NOW burst &lt;40ms</div>
+<div><span class="text-[#6B6455]">Accuracy:</span> ±5g tare precision, ±0.2°C temperature tolerance</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Layer 2 -->
+<div class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg shadow-sm transition-all overflow-hidden layer-item">
+<button class="w-full px-6 py-5 text-left flex items-start md:items-center justify-between gap-4 focus:outline-none layer-trigger" data-layer="2">
+<div class="flex items-start md:items-center gap-4">
+<span class="flex-shrink-0 w-8 h-8 rounded-lg bg-[#5C3D2E]/10 border border-[#5C3D2E]/20 text-[#5C3D2E] flex items-center justify-center font-mono font-bold text-sm">
+                02
+              </span>
+<div>
+<div class="flex items-center gap-2.5">
+<h3 class="font-headline text-lg font-bold text-[#201C14]">Edge &amp; Sync Layer</h3>
+<span class="text-xs font-mono px-2 py-0.5 rounded-full border border-[#E8A33D]/50 text-[#5C3D2E] bg-[#E8A33D]/10">Autonomous Pod Aggregation</span>
+</div>
+<p class="text-sm text-[#6B6455] mt-1">Hub writes to SD as cryptographic hash-chained log, runs local health rules, and raises alarms autonomously.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#6B6455] transition-transform duration-200 layer-icon" data-icon="expand_more">expand_more</span>
+</button>
+<div class="px-6 pb-6 pt-2 border-t border-[#E7DFC9]/60 layer-content hidden">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+<div>
+<h4 class="text-xs font-mono font-semibold text-[#201C14] uppercase tracking-wider mb-2">Edge Hardware &amp; Protocols</h4>
+<p class="text-sm text-[#6B6455] leading-relaxed">
+                  High-endurance SD log, DS3231 RTC, piezo buzzer/alarm LEDs, SMS via SIM7600 4G LTE modem, Bluetooth/WiFi-Direct local field sync, MQTT store-and-forward queue. Operates up to 60 days in zero-cellular backhaul dead zones.
+                </p>
+</div>
+<div>
+<h4 class="text-xs font-mono font-semibold text-[#201C14] uppercase tracking-wider mb-2">Technical Specification</h4>
+<div class="p-3 bg-[#F6F1E4] rounded border border-[#E7DFC9] font-mono text-xs text-[#201C14] space-y-1">
+<div><span class="text-[#6B6455]">Stack:</span> SIM7600 4G · DS3231 RTC · Chained SHA-256 SD Log · MQTT Store-Forward</div>
+<div><span class="text-[#6B6455]">Hash Integrity:</span> Merkle audit tree generated locally per 24h batch</div>
+<div><span class="text-[#6B6455]">Power System:</span> 10W Monocrystalline PV + MPPT + 12.8V LiFePO4 bank</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Layer 3 -->
+<div class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg shadow-sm transition-all overflow-hidden layer-item">
+<button class="w-full px-6 py-5 text-left flex items-start md:items-center justify-between gap-4 focus:outline-none layer-trigger" data-layer="3">
+<div class="flex items-start md:items-center gap-4">
+<span class="flex-shrink-0 w-8 h-8 rounded-lg bg-[#5C3D2E]/10 border border-[#5C3D2E]/20 text-[#5C3D2E] flex items-center justify-center font-mono font-bold text-sm">
+                03
+              </span>
+<div>
+<div class="flex items-center gap-2.5">
+<h3 class="font-headline text-lg font-bold text-[#201C14]">AI Intelligence Layer</h3>
+<span class="text-xs font-mono px-2 py-0.5 rounded-full border border-[#E8A33D]/50 text-[#5C3D2E] bg-[#E8A33D]/10">Anomaly &amp; Harvest Forecaster</span>
+</div>
+<p class="text-sm text-[#6B6455] mt-1">Cloud models score colony vitality, spot swarming &amp; disease anomalies, and forecast harvest yield while lightweight rule engines run directly on the hub.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#6B6455] transition-transform duration-200 layer-icon" data-icon="expand_more">expand_more</span>
+</button>
+<div class="px-6 pb-6 pt-2 border-t border-[#E7DFC9]/60 layer-content hidden">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+<div>
+<h4 class="text-xs font-mono font-semibold text-[#201C14] uppercase tracking-wider mb-2">Tech &amp; Inference Engines</h4>
+<p class="text-sm text-[#6B6455] leading-relaxed">
+                  Random Forest/XGBoost yield prediction, Isolation Forest acoustic anomaly detection, TensorFlow Lite Micro for on-hub audio vibration screening. Evaluates hive acoustics (200Hz - 600Hz) to preempt swarming flight 48 hours prior.
+                </p>
+</div>
+<div>
+<h4 class="text-xs font-mono font-semibold text-[#201C14] uppercase tracking-wider mb-2">Technical Specification</h4>
+<div class="p-3 bg-[#F6F1E4] rounded border border-[#E7DFC9] font-mono text-xs text-[#201C14] space-y-1">
+<div><span class="text-[#6B6455]">Stack:</span> TF Lite Micro · XGBoost · Isolation Forest · Python 3.11 / FastAPI</div>
+<div><span class="text-[#6B6455]">On-Device Latency:</span> &lt;140ms inference cycle per acoustic frame</div>
+<div><span class="text-[#6B6455]">Model Accuracy:</span> 94.2% ROC-AUC swarming trigger sensitivity</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Layer 4 (Open by Default) -->
+<div class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg shadow-sm transition-all overflow-hidden layer-item">
+<button class="w-full px-6 py-5 text-left flex items-start md:items-center justify-between gap-4 focus:outline-none layer-trigger" data-layer="4">
+<div class="flex items-start md:items-center gap-4">
+<span class="flex-shrink-0 w-8 h-8 rounded-lg bg-[#5C3D2E]/10 border border-[#5C3D2E]/20 text-[#5C3D2E] flex items-center justify-center font-mono font-bold text-sm">
+                04
+              </span>
+<div>
+<div class="flex items-center gap-2.5">
+<h3 class="font-headline text-lg font-bold text-[#201C14]">Trust &amp; Traceability Layer</h3>
+<span class="text-xs font-mono px-2 py-0.5 rounded-full border border-[#E8A33D]/50 text-[#5C3D2E] bg-[#E8A33D]/10">Cryptographic Proof of Provenance</span>
+</div>
+<p class="text-sm text-[#6B6455] mt-1">Device-generated cryptographic batch IDs, Merkle roots anchored on blockchain, and digitally signed tamper-evident QR verification.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#6B6455] transition-transform duration-200 layer-icon rotate-180" data-icon="expand_more">expand_more</span>
+</button>
+<div class="px-6 pb-6 pt-2 border-t border-[#E7DFC9]/60 layer-content">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+<div>
+<h4 class="text-xs font-mono font-semibold text-[#201C14] uppercase tracking-wider mb-2">Tech &amp; Standards</h4>
+<p class="text-sm text-[#6B6455] leading-relaxed">
+                  Solidity smart contracts on Polygon PoS / Ethereum-compatible rollup, Web3.py telemetry oracles, PostgreSQL with TimescaleDB, NABL lab test spectroscopy &amp; pollen profile anchoring. Guarantees tamper-free authenticity without high gas overhead.
+                </p>
+</div>
+<div>
+<h4 class="text-xs font-mono font-semibold text-[#201C14] uppercase tracking-wider mb-2">Technical Specification</h4>
+<div class="p-3 bg-[#F6F1E4] rounded border border-[#E7DFC9] font-mono text-xs text-[#201C14] space-y-1">
+<div><span class="text-[#6B6455]">Stack:</span> Solidity v0.8.20 · Polygon PoS · Web3.py · EIP-712 Signed Batches · NABL NMR</div>
+<div><span class="text-[#6B6455]">Batch Hash Anchor:</span> 0x8f2d...c34b (Polygon Mainnet Block #6189204)</div>
+<div><span class="text-[#6B6455]">Verification Latency:</span> &lt;350ms static verifiable proof delivery via IPFS</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Layer 5 -->
+<div class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg shadow-sm transition-all overflow-hidden layer-item">
+<button class="w-full px-6 py-5 text-left flex items-start md:items-center justify-between gap-4 focus:outline-none layer-trigger" data-layer="5">
+<div class="flex items-start md:items-center gap-4">
+<span class="flex-shrink-0 w-8 h-8 rounded-lg bg-[#5C3D2E]/10 border border-[#5C3D2E]/20 text-[#5C3D2E] flex items-center justify-center font-mono font-bold text-sm">
+                05
+              </span>
+<div>
+<div class="flex items-center gap-2.5">
+<h3 class="font-headline text-lg font-bold text-[#201C14]">Ecosystem &amp; Commerce Layer</h3>
+<span class="text-xs font-mono px-2 py-0.5 rounded-full border border-[#E8A33D]/50 text-[#5C3D2E] bg-[#E8A33D]/10">ONDC Federation &amp; Consumer Verify</span>
+</div>
+<p class="text-sm text-[#6B6455] mt-1">Unified interfaces for beekeepers, KVIC regional federations, consumers, and bulk honey aggregators. Storefront automatically publishes inventory from cryptographically sealed batches.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#6B6455] transition-transform duration-200 layer-icon" data-icon="expand_more">expand_more</span>
+</button>
+<div class="px-6 pb-6 pt-2 border-t border-[#E7DFC9]/60 layer-content hidden">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+<div>
+<h4 class="text-xs font-mono font-semibold text-[#201C14] uppercase tracking-wider mb-2">Tech &amp; Protocols</h4>
+<p class="text-sm text-[#6B6455] leading-relaxed">
+                  React PWA with offline caching, FastAPI backend, ONDC (Open Network for Digital Commerce) protocol adapter, recurring consumer subscriptions. Direct-to-consumer payouts route through smart-contract escrow upon warehouse scanning.
+                </p>
+</div>
+<div>
+<h4 class="text-xs font-mono font-semibold text-[#201C14] uppercase tracking-wider mb-2">Technical Specification</h4>
+<div class="p-3 bg-[#F6F1E4] rounded border border-[#E7DFC9] font-mono text-xs text-[#201C14] space-y-1">
+<div><span class="text-[#6B6455]">Stack:</span> React PWA · ONDC Protocol · TailwindCSS · FastAPI · Stripe/UPI Escrow</div>
+<div><span class="text-[#6B6455]">ONDC Adapter:</span> Beckn Protocol v1.1.0 compliant seller node</div>
+<div><span class="text-[#6B6455]">Federation:</span> KVIC Regional Dashboard Multi-Tenant RBAC</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: THE APIARY POD (HEXAGONAL VISUAL GRID) -->
+<section class="mb-16">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+<div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-mono text-[#E8A33D] tracking-normal">TOPOLOGY BLUEPRINT</span>
+<span class="text-[#6B6455] text-xs">/</span>
+<span class="text-xs font-mono text-[#6B6455]">Pod #04 Dehradun Valley</span>
+</div>
+<h2 class="font-headline text-2xl font-bold text-[#201C14] mt-1">The Apiary Pod Architecture</h2>
+<p class="text-sm text-[#6B6455]">Ten ESP-NOW mesh hive nodes orbiting one autonomous solar-powered Edge Hub.</p>
+</div>
+<!-- Telemetry Status Pills -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1.5 text-xs font-mono">
+<span class="w-2.5 h-2.5 rounded-full bg-[#E8A33D]"></span>
+<span>Healthy (8)</span>
+</div>
+<div class="flex items-center gap-1.5 text-xs font-mono">
+<span class="text-xs font-bold text-[#D4901F]">~</span>
+<span>Mod (1)</span>
+</div>
+<div class="flex items-center gap-1.5 text-xs font-mono">
+<span class="text-xs font-bold text-[#C9622E]">▲</span>
+<span>Warn (1)</span>
+</div>
+<div class="flex items-center gap-1.5 text-xs font-mono">
+<span class="text-xs font-bold text-[#A6371F]">!</span>
+<span>Crit (1)</span>
+</div>
+</div>
+</div>
+<!-- Bento Wrapper for Hex Layout & Live Hive Telemetry Card -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-[#FBF8F0] border border-[#E7DFC9] rounded-xl p-6 md:p-8 shadow-sm">
+<!-- Left: Hexagonal Grid Display -->
+<div class="lg:col-span-8 flex flex-col items-center justify-center relative min-h-[460px] bg-[#F6F1E4]/70 rounded-lg border border-[#E7DFC9]/70 p-4 overflow-hidden">
+<!-- Subtle background compass ring -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+<div class="w-96 h-96 rounded-full border border-dashed border-[#5C3D2E]"></div>
+<div class="w-64 h-64 rounded-full border border-[#5C3D2E]"></div>
+</div>
+<!-- Hexagonal Layout Container -->
+<div class="relative w-[340px] sm:w-[480px] h-[400px] flex items-center justify-center">
+<!-- Center Hub -->
+<div class="absolute z-20 cursor-pointer group" onclick="selectHive('HUB')" style="top: calc(50% - 48px); left: calc(50% - 52px);">
+<div class="w-[104px] h-[96px] clip-hex bg-[#5C3D2E] text-[#F6F1E4] flex flex-col items-center justify-center p-2 shadow-lg transition-transform group-hover:scale-105 border-2 border-[#E8A33D]">
+<span class="material-symbols-outlined text-[#E8A33D] text-lg" data-icon="solar_power" style="font-variation-settings: 'FILL' 1;">solar_power</span>
+<span class="font-headline text-xs font-bold text-center leading-tight mt-0.5">Pod Hub</span>
+<span class="text-[9px] font-mono text-[#E8DCC3]/80">4G / Solar / SD</span>
+</div>
+</div>
+<!-- Hive H-01 (Top-Right) -->
+<div class="absolute z-10 cursor-pointer transition-transform hover:scale-105" onclick="selectHive('H-01')" style="top: 18px; left: calc(50% + 40px);">
+<div class="w-[88px] h-[78px] clip-hex bg-[#FBF8F0] border border-[#E8A33D] text-[#201C14] flex flex-col items-center justify-center p-1 shadow-sm hover:shadow-md">
+<span class="font-mono text-xs font-bold text-[#201C14]">H-01</span>
+<span class="font-mono text-[11px] text-[#5C3D2E]">38.2 kg</span>
+<span class="text-[9px] font-mono text-[#E8A33D] font-medium flex items-center gap-0.5">● Healthy</span>
+</div>
+</div>
+<!-- Hive H-02 (Right High) -->
+<div class="absolute z-10 cursor-pointer transition-transform hover:scale-105" onclick="selectHive('H-02')" style="top: 104px; left: calc(50% + 115px);">
+<div class="w-[88px] h-[78px] clip-hex bg-[#FBF8F0] border border-[#E8A33D] text-[#201C14] flex flex-col items-center justify-center p-1 shadow-sm hover:shadow-md">
+<span class="font-mono text-xs font-bold text-[#201C14]">H-02</span>
+<span class="font-mono text-[11px] text-[#5C3D2E]">41.0 kg</span>
+<span class="text-[9px] font-mono text-[#E8A33D] font-medium flex items-center gap-0.5">● Healthy</span>
+</div>
+</div>
+<!-- Hive H-03 (Right Low - Moderate) -->
+<div class="absolute z-10 cursor-pointer transition-transform hover:scale-105" onclick="selectHive('H-03')" style="top: 200px; left: calc(50% + 115px);">
+<div class="w-[88px] h-[78px] clip-hex bg-[#FBF8F0] border border-[#D4901F] text-[#201C14] flex flex-col items-center justify-center p-1 shadow-sm hover:shadow-md">
+<span class="font-mono text-xs font-bold text-[#201C14]">H-03</span>
+<span class="font-mono text-[11px] text-[#5C3D2E]">33.5 kg</span>
+<span class="text-[9px] font-mono text-[#D4901F] font-semibold flex items-center gap-0.5">~ Mod</span>
+</div>
+</div>
+<!-- Hive H-04 (Bottom-Right) -->
+<div class="absolute z-10 cursor-pointer transition-transform hover:scale-105" onclick="selectHive('H-04')" style="top: 290px; left: calc(50% + 45px);">
+<div class="w-[88px] h-[78px] clip-hex bg-[#FBF8F0] border border-[#E8A33D] text-[#201C14] flex flex-col items-center justify-center p-1 shadow-sm hover:shadow-md">
+<span class="font-mono text-xs font-bold text-[#201C14]">H-04</span>
+<span class="font-mono text-[11px] text-[#5C3D2E]">44.7 kg</span>
+<span class="text-[9px] font-mono text-[#E8A33D] font-medium flex items-center gap-0.5">● Healthy</span>
+</div>
+</div>
+<!-- Hive H-05 (Bottom Center) -->
+<div class="absolute z-10 cursor-pointer transition-transform hover:scale-105" onclick="selectHive('H-05')" style="top: 310px; left: calc(50% - 44px);">
+<div class="w-[88px] h-[78px] clip-hex bg-[#FBF8F0] border border-[#E8A33D] text-[#201C14] flex flex-col items-center justify-center p-1 shadow-sm hover:shadow-md">
+<span class="font-mono text-xs font-bold text-[#201C14]">H-05</span>
+<span class="font-mono text-[11px] text-[#5C3D2E]">39.9 kg</span>
+<span class="text-[9px] font-mono text-[#E8A33D] font-medium flex items-center gap-0.5">● Healthy</span>
+</div>
+</div>
+<!-- Hive H-06 (Bottom-Left) -->
+<div class="absolute z-10 cursor-pointer transition-transform hover:scale-105" onclick="selectHive('H-06')" style="top: 280px; left: calc(50% - 130px);">
+<div class="w-[88px] h-[78px] clip-hex bg-[#FBF8F0] border border-[#E8A33D] text-[#201C14] flex flex-col items-center justify-center p-1 shadow-sm hover:shadow-md">
+<span class="font-mono text-xs font-bold text-[#201C14]">H-06</span>
+<span class="font-mono text-[11px] text-[#5C3D2E]">36.1 kg</span>
+<span class="text-[9px] font-mono text-[#E8A33D] font-medium flex items-center gap-0.5">● Healthy</span>
+</div>
+</div>
+<!-- Hive H-07 (Left Low - Warning) -->
+<div class="absolute z-10 cursor-pointer transition-transform hover:scale-105" onclick="selectHive('H-07')" style="top: 195px; left: calc(50% - 195px);">
+<div class="w-[88px] h-[78px] clip-hex bg-[#FBF8F0] border-2 border-[#C9622E] text-[#201C14] flex flex-col items-center justify-center p-1 shadow-sm hover:shadow-md">
+<span class="font-mono text-xs font-bold text-[#201C14]">H-07</span>
+<span class="font-mono text-[11px] text-[#C9622E] font-bold">30.8 kg</span>
+<span class="text-[9px] font-mono text-[#C9622E] font-bold flex items-center gap-0.5">▲ Warn</span>
+</div>
+</div>
+<!-- Hive H-08 (Left High - Healthy) -->
+<div class="absolute z-10 cursor-pointer transition-transform hover:scale-105" onclick="selectHive('H-08')" style="top: 98px; left: calc(50% - 195px);">
+<div class="w-[88px] h-[78px] clip-hex bg-[#FBF8F0] border border-[#E8A33D] text-[#201C14] flex flex-col items-center justify-center p-1 shadow-sm hover:shadow-md">
+<span class="font-mono text-xs font-bold text-[#201C14]">H-08</span>
+<span class="font-mono text-[11px] text-[#5C3D2E]">42.3 kg</span>
+<span class="text-[9px] font-mono text-[#E8A33D] font-medium flex items-center gap-0.5">● Healthy</span>
+</div>
+</div>
+<!-- Hive H-09 (Top-Left) -->
+<div class="absolute z-10 cursor-pointer transition-transform hover:scale-105" onclick="selectHive('H-09')" style="top: 18px; left: calc(50% - 128px);">
+<div class="w-[88px] h-[78px] clip-hex bg-[#FBF8F0] border border-[#E8A33D] text-[#201C14] flex flex-col items-center justify-center p-1 shadow-sm hover:shadow-md">
+<span class="font-mono text-xs font-bold text-[#201C14]">H-09</span>
+<span class="font-mono text-[11px] text-[#5C3D2E]">40.6 kg</span>
+<span class="text-[9px] font-mono text-[#E8A33D] font-medium flex items-center gap-0.5">● Healthy</span>
+</div>
+</div>
+<!-- Hive H-10 (Top Center - Critical) -->
+<div class="absolute z-10 cursor-pointer transition-transform hover:scale-105 animate-pulse-crit" onclick="selectHive('H-10')" style="top: 2px; left: calc(50% - 44px);">
+<div class="w-[88px] h-[78px] clip-hex bg-[#FBF8F0] border-2 border-[#A6371F] text-[#201C14] flex flex-col items-center justify-center p-1 shadow-md">
+<span class="font-mono text-xs font-bold text-[#A6371F]">H-10</span>
+<span class="font-mono text-[11px] text-[#A6371F] font-bold">27.4 kg</span>
+<span class="text-[9px] font-mono text-[#A6371F] font-bold flex items-center gap-0.5">! Critical</span>
+</div>
+</div>
+</div>
+<div class="w-full text-center mt-3 text-xs text-[#6B6455] font-mono">
+            Interactive topology: Click any cell to inspect live RF telemetry &amp; edge buffer.
+          </div>
+</div>
+<!-- Right: Hive Diagnostic Inspector Details -->
+<div class="lg:col-span-4 flex flex-col justify-between bg-[#F6F1E4] border border-[#E7DFC9] rounded-lg p-5">
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-[#E7DFC9]">
+<div>
+<span class="text-[10px] font-mono text-[#6B6455]">SELECTED NODE</span>
+<h3 class="font-headline text-xl font-bold text-[#201C14]" id="panel-title">H-10 (Sentinel Hive)</h3>
+</div>
+<span class="px-2.5 py-1 rounded-full text-xs font-mono border border-[#A6371F]/40 text-[#A6371F] bg-[#A6371F]/10 font-bold" id="panel-status-pill">
+                ! Critical
+              </span>
+</div>
+<p class="text-xs text-[#6B6455] mt-3 leading-relaxed" id="panel-desc">
+              Abrupt weight deficit detected (-4.8 kg in 6 hrs). Brood temperature variance exceeds normal 34.5°C threshold. Possible swarming or robbing event.
+            </p>
+<!-- Metrics Grid -->
+<div class="grid grid-cols-2 gap-2 mt-5">
+<div class="bg-[#FBF8F0] p-3 rounded border border-[#E7DFC9]">
+<span class="text-[10px] font-mono text-[#6B6455] block">CURRENT WEIGHT</span>
+<span class="font-mono text-base font-bold text-[#201C14]" id="panel-weight">27.40 kg</span>
+<span class="text-[10px] text-[#A6371F] font-mono block">▲ -4.8kg drop</span>
+</div>
+<div class="bg-[#FBF8F0] p-3 rounded border border-[#E7DFC9]">
+<span class="text-[10px] font-mono text-[#6B6455] block">BROOD TEMP</span>
+<span class="font-mono text-base font-bold text-[#201C14]" id="panel-temp">31.2°C</span>
+<span class="text-[10px] text-[#6B6455] font-mono block">Target: 34.5°C</span>
+</div>
+<div class="bg-[#FBF8F0] p-3 rounded border border-[#E7DFC9]">
+<span class="text-[10px] font-mono text-[#6B6455] block">RELATIVE HUMIDITY</span>
+<span class="font-mono text-base font-bold text-[#201C14]" id="panel-humidity">52% RH</span>
+<span class="text-[10px] text-[#E8A33D] font-mono block">Optimal range</span>
+</div>
+<div class="bg-[#FBF8F0] p-3 rounded border border-[#E7DFC9]">
+<span class="text-[10px] font-mono text-[#6B6455] block">BATTERY &amp; RF</span>
+<span class="font-mono text-base font-bold text-[#201C14]" id="panel-battery">3.28V (78%)</span>
+<span class="text-[10px] text-[#6B6455] font-mono block">RSSI -68 dBm</span>
+</div>
+</div>
+<!-- Hash chaining pill -->
+<div class="mt-4 p-2.5 bg-[#FBF8F0] rounded border border-[#E7DFC9] font-mono text-[11px] text-[#6B6455] space-y-1">
+<div><span class="text-[#201C14]">Last Synced:</span> <span id="panel-synced">2 mins ago via ESP-NOW</span></div>
+<div class="truncate"><span class="text-[#201C14]">SD Log Hash:</span> <span class="text-[#5C3D2E]" id="panel-hash">0x7c9a...110e</span></div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-[#E7DFC9]">
+<button class="w-full py-2 px-3 rounded bg-[#5C3D2E] text-[#F6F1E4] hover:bg-[#4A2F22] text-xs font-mono font-medium transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
+<span class="material-symbols-outlined text-sm text-[#E8A33D]" data-icon="broadcast_on_home">broadcast_on_home</span>
+              Dispatch Field SMS Alert
+            </button>
+</div>
+</div>
+</div>
+<!-- Caption & Legend -->
+<div class="mt-4 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs text-[#6B6455]">
+<p class="font-body italic">
+          The dashboard a beekeeper sees for one pod. Each cell is a hive; weights are sample data from Field Cluster #4 (Dehradun).
+        </p>
+<div class="flex items-center gap-4 font-mono text-[11px]">
+<span class="flex items-center gap-1"><span class="text-[#E8A33D]">●</span> Healthy: Normal foraging</span>
+<span class="flex items-center gap-1"><span class="text-[#D4901F] font-bold">~</span> Moderate: Stable tare</span>
+<span class="flex items-center gap-1"><span class="text-[#C9622E] font-bold">▲</span> Warning: Mild depletion</span>
+<span class="flex items-center gap-1"><span class="text-[#A6371F] font-bold">!</span> Critical: Inspection needed</span>
+</div>
+</div>
+</section>
+<!-- SECTION 3: HIVE NODE HARDWARE DIAGRAM -->
+<section class="mb-16">
+<div class="mb-6">
+<h2 class="font-headline text-2xl font-bold text-[#201C14]">Hive Node Hardware Schematic</h2>
+<p class="text-sm text-[#6B6455]">Exploded architectural assembly of a Langstroth hive node with continuous telemetry instrumentation.</p>
+</div>
+<div class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-xl p-6 md:p-8 shadow-sm">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<!-- Graphic Diagram Column (SVG Architectural Illustration) -->
+<div class="lg:col-span-7 flex justify-center items-center bg-[#F6F1E4] rounded-lg p-6 border border-[#E7DFC9]">
+<svg class="w-full max-w-md h-auto" fill="none" viewbox="0 0 380 430" xmlns="http://www.w3.org/2000/svg">
+<!-- Top Cover / Roof -->
+<rect fill="#5C3D2E" height="26" rx="3" stroke="#4A2F22" stroke-width="2" width="240" x="70" y="25"></rect>
+<rect fill="#E8A33D" height="7" opacity="0.8" rx="1" width="80" x="80" y="18"></rect>
+<!-- Inner Cover & Solar Interface -->
+<rect fill="#D4C3A3" height="14" stroke="#8C7A58" stroke-width="1.5" width="210" x="85" y="54"></rect>
+<!-- Honey Super -->
+<rect fill="#E8DCC3" height="75" rx="2" stroke="#8C7A58" stroke-width="2" width="200" x="90" y="72"></rect>
+<!-- Comb frames preview lines -->
+<line stroke="#CBB996" stroke-dasharray="2 2" stroke-width="2" x1="115" x2="115" y1="78" y2="140"></line>
+<line stroke="#CBB996" stroke-dasharray="2 2" stroke-width="2" x1="140" x2="140" y1="78" y2="140"></line>
+<line stroke="#CBB996" stroke-dasharray="2 2" stroke-width="2" x1="165" x2="165" y1="78" y2="140"></line>
+<line stroke="#E8A33D" stroke-width="2.5" x1="190" x2="190" y1="78" y2="140"></line> <!-- Active Frame -->
+<line stroke="#CBB996" stroke-dasharray="2 2" stroke-width="2" x1="215" x2="215" y1="78" y2="140"></line>
+<line stroke="#CBB996" stroke-dasharray="2 2" stroke-width="2" x1="240" x2="240" y1="78" y2="140"></line>
+<line stroke="#CBB996" stroke-dasharray="2 2" stroke-width="2" x1="265" x2="265" y1="78" y2="140"></line>
+<!-- Brood Chamber -->
+<rect fill="#DFD2B7" height="110" rx="2" stroke="#8C7A58" stroke-width="2" width="200" x="90" y="152"></rect>
+<!-- SHT31 Probe inside brood -->
+<circle cx="190" cy="205" fill="#E8A33D" r="7" stroke="#5C3D2E" stroke-width="1.5"></circle>
+<path d="M190 205 L290 205" stroke="#E8A33D" stroke-dasharray="3 2" stroke-width="1.5"></path>
+<!-- Hive Entrance Gate -->
+<rect fill="#5C3D2E" height="18" stroke="#4A2F22" stroke-width="1.5" width="200" x="90" y="266"></rect>
+<rect fill="#201C14" height="6" rx="2" width="80" x="150" y="272"></rect>
+<!-- 4x Load Cells Platform -->
+<rect fill="#A49882" height="12" stroke="#6B6455" stroke-width="1.5" width="220" x="80" y="288"></rect>
+<!-- Strain Gauges (HX711 corners) -->
+<rect fill="#E8A33D" height="18" rx="2" stroke="#5C3D2E" stroke-width="1.5" width="24" x="88" y="304"></rect>
+<rect fill="#E8A33D" height="18" rx="2" stroke="#5C3D2E" stroke-width="1.5" width="24" x="268" y="304"></rect>
+<line stroke="#5C3D2E" stroke-dasharray="4 2" stroke-width="1" x1="100" x2="280" y1="313" y2="313"></line>
+<!-- Vibration Damped Concrete Pavers -->
+<rect fill="#8E887B" height="26" rx="3" stroke="#5C3D2E" stroke-width="1.5" width="250" x="65" y="326"></rect>
+<rect fill="#6B6455" height="10" rx="2" width="260" x="60" y="356"></rect>
+<!-- Callout Lines and Labels -->
+<!-- Roof -->
+<path d="M312 36 L345 36" stroke="#6B6455" stroke-width="1.5"></path>
+<circle cx="345" cy="36" fill="#6B6455" r="2.5"></circle>
+<!-- Super -->
+<path d="M292 108 L345 108" stroke="#6B6455" stroke-width="1.5"></path>
+<circle cx="345" cy="108" fill="#6B6455" r="2.5"></circle>
+<!-- Brood / Probe -->
+<circle cx="345" cy="205" fill="#E8A33D" r="2.5"></circle>
+<!-- Entrance -->
+<path d="M292 275 L345 275" stroke="#6B6455" stroke-width="1.5"></path>
+<circle cx="345" cy="275" fill="#6B6455" r="2.5"></circle>
+<!-- Load Cell -->
+<path d="M294 313 L345 313" stroke="#E8A33D" stroke-width="1.5"></path>
+<circle cx="345" cy="313" fill="#E8A33D" r="2.5"></circle>
+<!-- Concrete -->
+<path d="M317 338 L345 338" stroke="#6B6455" stroke-width="1.5"></path>
+<circle cx="345" cy="338" fill="#6B6455" r="2.5"></circle>
+</svg>
+</div>
+<!-- Description Column with Architectural Breakdown -->
+<div class="lg:col-span-5 space-y-4">
+<div class="border-b border-[#E7DFC9] pb-3">
+<span class="text-xs font-mono text-[#E8A33D] uppercase">Anatomy of an Instrumented Hive</span>
+<h3 class="font-headline text-xl font-bold text-[#201C14] mt-0.5">Physical Langstroth Assembly</h3>
+</div>
+<div class="space-y-3 text-xs">
+<div class="flex items-start gap-2.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#5C3D2E] mt-1.5 flex-shrink-0"></span>
+<div>
+<strong class="text-[#201C14] font-semibold">Telescopic Roof &amp; Inner Cover:</strong>
+<span class="text-[#6B6455]"> Weather shield housing passive ventilation gills and low-profile 2W solar replenishment cell.</span>
+</div>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#5C3D2E] mt-1.5 flex-shrink-0"></span>
+<div>
+<strong class="text-[#201C14] font-semibold">Honey Super:</strong>
+<span class="text-[#6B6455]"> Upper chamber dedicated to pure surplus comb storage, isolated from the brood via queen excluder screen.</span>
+</div>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D] mt-1.5 flex-shrink-0"></span>
+<div>
+<strong class="text-[#201C14] font-semibold">Brood Chamber with SHT31 Probe:</strong>
+<span class="text-[#6B6455]"> Queen laying zone. SHT31 probe continuously logs homeostatic 34.5°C cluster warmth and incubation conditions.</span>
+</div>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#5C3D2E] mt-1.5 flex-shrink-0"></span>
+<div>
+<strong class="text-[#201C14] font-semibold">Hive Entrance Add-on:</strong>
+<span class="text-[#6B6455]"> Integrated optical bee activity slot, varroa mite floor inspection grid, and mouse guard damper.</span>
+</div>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D] mt-1.5 flex-shrink-0"></span>
+<div>
+<strong class="text-[#201C14] font-semibold">Four Precision Load Cells (4x HX711):</strong>
+<span class="text-[#6B6455]"> Corner-balanced bridge eliminates frame center-of-gravity shifts; records nectar influx &amp; honey reserves with 5g resolution.</span>
+</div>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#5C3D2E] mt-1.5 flex-shrink-0"></span>
+<div>
+<strong class="text-[#201C14] font-semibold">Vibration-Damped Concrete Paver:</strong>
+<span class="text-[#6B6455]"> Decouples ground acoustic noise and stabilizes leveling pads against seasonal monsoon soil subsidence.</span>
+</div>
+</div>
+</div>
+<!-- Specification Callout Box -->
+<div class="p-3.5 bg-[#F6F1E4] rounded border border-[#E7DFC9] text-xs font-mono text-[#5C3D2E] leading-relaxed mt-4">
+<span class="font-bold text-[#201C14] block mb-1">Compute &amp; Power Specification:</span>
+              ESP32-C3 ultra-low power MCU, HX711 24-bit ADC amplifier, 18650 LiFePO4 battery (8-month field autonomy on 15-min sync intervals).
+            </div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 4: TWO BUILD OPTIONS -->
+<section class="mb-12">
+<div class="mb-6">
+<h2 class="font-headline text-2xl font-bold text-[#201C14]">Apiary Deployment Topologies</h2>
+<p class="text-sm text-[#6B6455]">Architectural flexibility tailored to commercial honey operations and state cooperative federations.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Standard Pod Option -->
+<div class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-xl p-6 md:p-8 flex flex-col justify-between shadow-sm relative">
+<div>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[#E8A33D]/40 bg-[#E8A33D]/10 text-xs font-mono text-[#5C3D2E] mb-4">
+              Recommended for Premium Single-Origin Batches
+            </div>
+<h3 class="font-headline text-2xl font-bold text-[#201C14]">Standard Pod</h3>
+<p class="text-xs font-mono text-[#6B6455] mt-1">100% Comprehensive Cluster Telemetry</p>
+<div class="my-5 py-4 border-y border-[#E7DFC9]">
+<span class="text-xs font-mono text-[#6B6455] block uppercase">Estimated Capital Capex</span>
+<div class="font-headline text-3xl font-bold text-[#201C14] mt-1">
+                ₹38,000 – ₹42,000
+                <span class="text-xs font-normal font-body text-[#6B6455]">/ 10-hive cluster</span>
+</div>
+</div>
+<div class="space-y-3.5 text-xs text-[#6B6455]">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-sm text-[#E8A33D] mt-0.5" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span><strong>Architecture:</strong> Every hive (10/10) gets a full hardware node (scale, precision temp, brood humidity, acoustic mic).</span>
+</div>
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-sm text-[#E8A33D] mt-0.5" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span><strong>Strengths:</strong> Complete per-box weight curves, individual queen failure detection, exact robbery &amp; swarming alerts.</span>
+</div>
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-sm text-[#E8A33D] mt-0.5" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span><strong>Best For:</strong> High-value monofloral honey (Kashmir Acacia, Sidr, Jamun), certified organic exports.</span>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-4 border-t border-[#E7DFC9]">
+<a class="w-full py-2.5 rounded-lg border border-[#E8A33D] text-[#5C3D2E] hover:bg-[#E8A33D]/10 text-xs font-mono font-medium transition-colors flex items-center justify-center gap-1.5" href="#quote-standard">
+              Select Standard Architecture Specs
+            </a>
+</div>
+</div>
+<!-- Lite Pod Option -->
+<div class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-xl p-6 md:p-8 flex flex-col justify-between shadow-sm relative">
+<div>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[#D4901F]/40 bg-[#D4901F]/10 text-xs font-mono text-[#5C3D2E] mb-4">
+              Optimized for Rural Cooperative Scale
+            </div>
+<h3 class="font-headline text-2xl font-bold text-[#201C14]">Lite Pod with Sentinel Hives</h3>
+<p class="text-xs font-mono text-[#6B6455] mt-1">Hybrid Sampling &amp; Microclimate Grid</p>
+<div class="my-5 py-4 border-y border-[#E7DFC9]">
+<span class="text-xs font-mono text-[#6B6455] block uppercase">Estimated Capital Capex</span>
+<div class="font-headline text-3xl font-bold text-[#201C14] mt-1">
+                ₹26,000
+                <span class="text-xs font-normal font-body text-[#6B6455]">/ 10-hive cluster</span>
+</div>
+</div>
+<div class="space-y-3.5 text-xs text-[#6B6455]">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-sm text-[#D4901F] mt-0.5" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span><strong>Architecture:</strong> 3 Sentinel Hives with full load cell scales + 7 auxiliary hives equipped with temperature/humidity probes only.</span>
+</div>
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-sm text-[#D4901F] mt-0.5" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span><strong>Strengths:</strong> Lower capex while retaining microclimate alerts across 100% of colonies; sentinel nodes provide statistical yield sampling.</span>
+</div>
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-sm text-[#D4901F] mt-0.5" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span><strong>Best For:</strong> Tribal rural apiaries, KVIC welfare schemes, rapid mass cooperative deployments.</span>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-4 border-t border-[#E7DFC9]">
+<a class="w-full py-2.5 rounded-lg border border-[#D4901F] text-[#5C3D2E] hover:bg-[#D4901F]/10 text-xs font-mono font-medium transition-colors flex items-center justify-center gap-1.5" href="#quote-lite">
+              Select Lite Cooperative Specs
+            </a>
+</div>
+</div>
+</div>
+<!-- Architectural Engineering Callout -->
+<div class="mt-8 p-5 bg-[#FBF8F0] border border-[#E7DFC9] rounded-xl flex items-start gap-4 shadow-sm">
+<div class="p-2 bg-[#E8A33D]/20 rounded-lg text-[#5C3D2E] flex-shrink-0">
+<span class="material-symbols-outlined" data-icon="hub">hub</span>
+</div>
+<div class="space-y-1">
+<h4 class="font-headline text-base font-bold text-[#201C14]">
+            Why nodes are wireless (ESP-NOW) and the hub is not
+          </h4>
+<p class="text-xs text-[#6B6455] leading-relaxed">
+            Eliminates miles of vulnerable field cabling between boxes that snag on brush or suffer rodent damage, while concentrating power-hungry 4G cellular transmission into a single solar-backed weatherproof base station. Even if cellular connectivity drops during Himalayan monsoons, ESP-NOW peer meshes log uninterrupted locally.
+          </p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="bg-[#201C14] dark:bg-[#15120C] border-t border-[#E8DCC3]/20 docked full-width bottom-0">
+<div class="w-full px-6 md:px-12 py-10 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+<!-- Logo & Copyright -->
+<div class="flex flex-col items-center md:items-start gap-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#E8A33D] text-lg" data-icon="hexagon" style="font-variation-settings: 'FILL' 1;">hexagon</span>
+<span class="font-headline text-base font-bold text-[#F6F1E4]">HoneyChain</span>
+</div>
+<p class="font-body text-xs text-[#E8DCC3]/60 text-center md:text-left">
+          © 2025 HoneyChain. Decentralized Apiculture &amp; Honey Provenance Architecture.
+        </p>
+</div>
+<!-- Footer Navigation Links -->
+<div class="flex flex-wrap justify-center items-center gap-6 text-xs font-mono text-[#E8DCC3]/70">
+<a class="hover:text-[#E8A33D] transition-colors duration-150" href="#blueprint">Architecture Blueprint</a>
+<a class="hover:text-[#E8A33D] transition-colors duration-150" href="#contracts">Smart Contracts</a>
+<a class="hover:text-[#E8A33D] transition-colors duration-150" href="#telemetry">Telemetry Specs</a>
+<a class="hover:text-[#E8A33D] transition-colors duration-150" href="#hackathon">Hackathon Submission</a>
+<a class="hover:text-[#E8A33D] transition-colors duration-150" href="#registry">Node Registry</a>
+</div>
+</div>
+</footer>
+<!-- Vanilla JS for Micro-Interactions -->
+<script>
+    // Layer Accordion Functionality
+    document.querySelectorAll('.layer-trigger').forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const item = trigger.closest('.layer-item');
+        const content = item.querySelector('.layer-content');
+        const icon = trigger.querySelector('.layer-icon');
+        
+        const isHidden = content.classList.contains('hidden');
+        if (isHidden) {
+          content.classList.remove('hidden');
+          icon.classList.add('rotate-180');
+        } else {
+          content.classList.add('hidden');
+          icon.classList.remove('rotate-180');
+        }
+      });
+    });
+
+    // Expand / Collapse All Toggle
+    const toggleAllBtn = document.getElementById('toggle-all-btn');
+    let allExpanded = false;
+    toggleAllBtn.addEventListener('click', () => {
+      allExpanded = !allExpanded;
+      document.querySelectorAll('.layer-item').forEach(item => {
+        const content = item.querySelector('.layer-content');
+        const icon = item.querySelector('.layer-icon');
+        if (allExpanded) {
+          content.classList.remove('hidden');
+          icon.classList.add('rotate-180');
+          toggleAllBtn.innerText = 'Collapse All Layers';
+        } else {
+          content.classList.add('hidden');
+          icon.classList.remove('rotate-180');
+          toggleAllBtn.innerText = 'Expand All Layers';
+        }
+      });
+    });
+
+    // Telemetry Data Store for Interactive Pod
+    const podTelemetry = {
+      'HUB': {
+        title: 'Central Pod Hub #04',
+        statusText: 'Active Base',
+        statusClass: 'border-[#E8A33D]/40 text-[#5C3D2E] bg-[#E8A33D]/10 font-bold',
+        desc: 'Edge gateway coordinating 10 hive nodes. MicroSD cryptographic chain writer, 4G LTE modem and dual-band solar MPPT buffer.',
+        weight: '— (Hub Unit)',
+        weightSub: 'Base station',
+        temp: '28.4°C Ambient',
+        humidity: '58% RH Amb',
+        battery: '12.8V Solar Bank',
+        synced: 'Just now via SIM7600',
+        hash: '0x3a4f...991e'
+      },
+      'H-01': {
+        title: 'H-01 (Auxiliary Hive)',
+        statusText: '● Healthy',
+        statusClass: 'border-[#E8A33D]/40 text-[#E8A33D] bg-[#E8A33D]/10 font-medium',
+        desc: 'Steady nectar intake observed during morning brassica bloom. Internal hive humidity and queen temperature steady.',
+        weight: '38.20 kg',
+        weightSub: '+0.4kg past 24h',
+        temp: '34.6°C',
+        humidity: '56% RH',
+        battery: '3.31V (88%)',
+        synced: '4 mins ago via ESP-NOW',
+        hash: '0x1b4c...ff20'
+      },
+      'H-02': {
+        title: 'H-02 (Sentinel Hive)',
+        statusText: '● Healthy',
+        statusClass: 'border-[#E8A33D]/40 text-[#E8A33D] bg-[#E8A33D]/10 font-medium',
+        desc: 'Peak production capacity reached. Acoustic sensor indicates active fanning and honey ripening in the upper super chamber.',
+        weight: '41.00 kg',
+        weightSub: '+1.1kg past 24h',
+        temp: '34.5°C',
+        humidity: '54% RH',
+        battery: '3.29V (82%)',
+        synced: '1 min ago via ESP-NOW',
+        hash: '0x99e1...45cb'
+      },
+      'H-03': {
+        title: 'H-03 (Auxiliary Hive)',
+        statusText: '~ Moderate',
+        statusClass: 'border-[#D4901F]/40 text-[#D4901F] bg-[#D4901F]/10 font-semibold',
+        desc: 'Weight stationary over consecutive days. Brood core temperature within safe tolerance, minor forage delay logged.',
+        weight: '33.50 kg',
+        weightSub: '±0.0kg stable tare',
+        temp: '34.2°C',
+        humidity: '61% RH',
+        battery: '3.25V (74%)',
+        synced: '7 mins ago via ESP-NOW',
+        hash: '0x44d2...aa90'
+      },
+      'H-04': {
+        title: 'H-04 (Sentinel Hive)',
+        statusText: '● Healthy',
+        statusClass: 'border-[#E8A33D]/40 text-[#E8A33D] bg-[#E8A33D]/10 font-medium',
+        desc: 'Highest reserve in the sector. Frame fill estimate at 85%. Ready for harvest protocol certification.',
+        weight: '44.70 kg',
+        weightSub: '+0.8kg past 24h',
+        temp: '34.7°C',
+        humidity: '51% RH',
+        battery: '3.34V (92%)',
+        synced: '2 mins ago via ESP-NOW',
+        hash: '0xee10...334a'
+      },
+      'H-05': {
+        title: 'H-05 (Auxiliary Hive)',
+        statusText: '● Healthy',
+        statusClass: 'border-[#E8A33D]/40 text-[#E8A33D] bg-[#E8A33D]/10 font-medium',
+        desc: 'Colony vitality index scored at 96/100 by cloud random forest pipeline. Regular diurnal weight cycle intact.',
+        weight: '39.90 kg',
+        weightSub: '+0.3kg past 24h',
+        temp: '34.4°C',
+        humidity: '57% RH',
+        battery: '3.30V (84%)',
+        synced: '9 mins ago via ESP-NOW',
+        hash: '0x22c9...b112'
+      },
+      'H-06': {
+        title: 'H-06 (Auxiliary Hive)',
+        statusText: '● Healthy',
+        statusClass: 'border-[#E8A33D]/40 text-[#E8A33D] bg-[#E8A33D]/10 font-medium',
+        desc: 'Normal pollen gathering trajectory. Probes record uniform temperature across both inner comb layers.',
+        weight: '36.10 kg',
+        weightSub: '+0.2kg past 24h',
+        temp: '34.5°C',
+        humidity: '58% RH',
+        battery: '3.27V (79%)',
+        synced: '5 mins ago via ESP-NOW',
+        hash: '0x77d1...09fe'
+      },
+      'H-07': {
+        title: 'H-07 (Auxiliary Hive)',
+        statusText: '▲ Warning',
+        statusClass: 'border-[#C9622E]/40 text-[#C9622E] bg-[#C9622E]/10 font-bold',
+        desc: 'Mild weight depletion observed over 48h. Microclimate sensor indicates slight nocturnal clustering shrinkage.',
+        weight: '30.80 kg',
+        weightSub: '▲ -1.4kg drop',
+        temp: '33.8°C',
+        humidity: '66% RH',
+        battery: '3.22V (68%)',
+        synced: '3 mins ago via ESP-NOW',
+        hash: '0x33aa...8801'
+      },
+      'H-08': {
+        title: 'H-08 (Sentinel Hive)',
+        statusText: '● Healthy',
+        statusClass: 'border-[#E8A33D]/40 text-[#E8A33D] bg-[#E8A33D]/10 font-medium',
+        desc: 'Strong bee density around entrance gate. Accelerometer reveals zero predatory hornets or vibrational disturbances.',
+        weight: '42.30 kg',
+        weightSub: '+0.6kg past 24h',
+        temp: '34.5°C',
+        humidity: '53% RH',
+        battery: '3.32V (89%)',
+        synced: '6 mins ago via ESP-NOW',
+        hash: '0xbc40...1911'
+      },
+      'H-09': {
+        title: 'H-09 (Auxiliary Hive)',
+        statusText: '● Healthy',
+        statusClass: 'border-[#E8A33D]/40 text-[#E8A33D] bg-[#E8A33D]/10 font-medium',
+        desc: 'Consistent foraging patterns recorded. Nightly hive condensation vented naturally without excessive cooling.',
+        weight: '40.60 kg',
+        weightSub: '+0.5kg past 24h',
+        temp: '34.6°C',
+        humidity: '55% RH',
+        battery: '3.28V (81%)',
+        synced: '4 mins ago via ESP-NOW',
+        hash: '0x10ae...ff32'
+      },
+      'H-10': {
+        title: 'H-10 (Sentinel Hive)',
+        statusText: '! Critical',
+        statusClass: 'border-[#A6371F]/40 text-[#A6371F] bg-[#A6371F]/10 font-bold',
+        desc: 'Abrupt weight deficit detected (-4.8 kg in 6 hrs). Brood temperature variance exceeds normal 34.5°C threshold. Possible swarming or robbing event.',
+        weight: '27.40 kg',
+        weightSub: '▲ -4.8kg drop',
+        temp: '31.2°C',
+        humidity: '52% RH',
+        battery: '3.28V (78%)',
+        synced: '2 mins ago via ESP-NOW',
+        hash: '0x7c9a...110e'
+      }
+    };
+
+    function selectHive(id) {
+      const data = podTelemetry[id];
+      if (!data) return;
+
+      document.getElementById('panel-title').innerText = data.title;
+      const statusPill = document.getElementById('panel-status-pill');
+      statusPill.innerText = data.statusText;
+      statusPill.className = `px-2.5 py-1 rounded-full text-xs font-mono ${data.statusClass}`;
+      
+      document.getElementById('panel-desc').innerText = data.desc;
+      document.getElementById('panel-weight').innerText = data.weight;
+      document.getElementById('panel-temp').innerText = data.temp;
+      document.getElementById('panel-humidity').innerText = data.humidity;
+      document.getElementById('panel-battery').innerText = data.battery;
+      document.getElementById('panel-synced').innerText = data.synced;
+      document.getElementById('panel-hash').innerText = data.hash;
+    }
+  </script>
+</body></html>

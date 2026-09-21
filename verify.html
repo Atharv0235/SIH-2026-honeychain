@@ -1,0 +1,612 @@
+﻿<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HoneyChain — Verify a Batch</title>
+<!-- Google Fonts: Source Serif 4, Inter, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {},
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {},
+          fontFamily: {
+            headline: ["\"Source Serif 4\"", "Georgia", "serif"],
+            display: ["\"Source Serif 4\"", "Georgia", "serif"],
+            body: ["Inter", "sans-serif"],
+            mono: ["\"JetBrains Mono\"", "monospace"],
+            label: ["Inter", "sans-serif"]
+          },
+          fontSize: {}
+        },
+      },
+    }
+  </script>
+<style>
+    /* Continuous parchment background with faint concentric hexagonal contour lines */
+    .bg-honey-parchment {
+      background-color: #F6F1E4;
+      background-image: radial-gradient(circle at 50% 50%, rgba(232, 220, 195, 0.35) 1px, transparent 1px),
+        repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 40px, rgba(232, 220, 195, 0.32) 41px, transparent 42px);
+      background-size: 100% 100%, 80px 80px;
+    }
+    
+    /* Subtle hex pattern watermark layer */
+    .hex-watermark-overlay {
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='103.923' viewBox='0 0 60 103.923' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l30 17.32v34.64L30 69.282 0 51.96V17.32L30 0zm0 103.923l30-17.32v-34.64L30 34.641 0 51.96v34.641l30 17.322z' fill='none' stroke='%23E8DCC3' stroke-width='1' stroke-opacity='0.28'/%3E%3C/svg%3E");
+    }
+
+    /* Laser scanner animation */
+    @keyframes scanMotion {
+      0% { top: 6%; opacity: 0.85; }
+      50% { top: 88%; opacity: 1; box-shadow: 0 0 14px rgba(232, 163, 61, 0.85); }
+      100% { top: 6%; opacity: 0.85; }
+    }
+    .scanner-laser {
+      animation: scanMotion 2.8s ease-in-out infinite;
+    }
+
+    /* Pulse wave for verified beacons */
+    @keyframes subtlePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(1.15); }
+    }
+    .pulse-dot {
+      animation: subtlePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-honey-parchment text-[#201C14] font-body relative selection:bg-[#E8A33D]/20 selection:text-[#201C14] antialiased">
+<!-- Fixed Ambient Hexagonal Watermark Overlay -->
+<div class="fixed inset-0 pointer-events-none hex-watermark-overlay z-0"></div>
+<!-- Main Viewport Wrap -->
+<div class="relative z-10 flex flex-col min-h-screen">
+<!-- TOP NAVBAR (Matching Shared Components JSON strictly) -->
+<header class="docked full-width top-0 sticky z-50 bg-[#5C3D2E] dark:bg-[#4A2F22] shadow-md border-b border-[#4A2F22]/40 transition-colors">
+<div class="flex justify-between items-center w-full px-6 md:px-12 py-3.5 max-w-7xl mx-auto">
+<!-- Brand Logo / Wordmark -->
+<a class="flex items-center gap-2.5 group" href="#">
+<span class="w-3 h-3 rounded-full bg-[#E8A33D] shadow-[0_0_10px_#E8A33D] ring-2 ring-[#E8A33D]/30 transition-transform group-hover:scale-110"></span>
+<span class="font-headline text-xl font-bold text-[#F6F1E4] tracking-tight">HoneyChain</span>
+</a>
+<!-- Desktop Navigation Links -->
+<nav class="hidden lg:flex items-center gap-7">
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="index.html">Home</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="problem.html">Problem</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="architecture.html">Architecture</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="dashboard.html">Dashboard</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="traceability.html">Traceability</a>
+<a class="text-[#E8A33D] font-medium transition-colors relative py-1 text-sm" href="verify.html">
+          Verify
+          <span class="absolute bottom-0 left-0 w-full h-[2px] bg-[#E8A33D] rounded-full"></span>
+</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="marketplace.html">Marketplace</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="economics.html">Economics</a>
+<a class="text-[#F6F1E4]/80 font-normal transition-colors hover:text-[#E8A33D] duration-150 text-sm" href="team.html">Team</a>
+</nav>
+<!-- Trailing Action / Pill Badge -->
+<div class="flex items-center gap-3">
+<div class="border border-[#E8DCC3]/30 text-[#F6F1E4]/90 text-xs px-3.5 py-1.5 rounded-full bg-[#4A2F22]/60 font-label tracking-wide flex items-center gap-1.5 shadow-inner">
+<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D]"></span>
+<span>Team Brain Hustlers · SIH 2026</span>
+</div>
+</div>
+</div>
+</header>
+<!-- CONTENT BODY -->
+<main class="flex-1 max-w-7xl w-full mx-auto px-6 md:px-12 py-10 space-y-12">
+<!-- HEADER SECTION -->
+<section class="space-y-4">
+<!-- Breadcrumb / Attribution -->
+<div class="flex flex-wrap items-center gap-2 font-mono text-xs text-[#6B6455] tracking-wide">
+<span>Ministry of MSME &amp; KVIC</span>
+<span class="text-[#E8DCC3]">/</span>
+<span>Smart India Hackathon 2026</span>
+<span class="text-[#E8DCC3]">/</span>
+<span class="text-[#201C14] font-medium bg-[#E8DCC3]/40 px-2 py-0.5 rounded">Public Verification Gateway v2.4</span>
+</div>
+<!-- Title & Subtitle -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b border-[#E7DFC9]">
+<div class="max-w-3xl space-y-2">
+<h1 class="font-headline text-3xl sm:text-4xl lg:text-5xl font-bold text-[#201C14] tracking-tight leading-tight">
+              Verify a Batch
+            </h1>
+<p class="text-base sm:text-lg text-[#6B6455] font-normal leading-relaxed">
+              Scan a QR code or enter a batch ID to check authenticity, hive telemetry, and on-chain provenance.
+            </p>
+</div>
+<!-- Semantic Protocol Badges -->
+<div class="flex flex-wrap gap-2 pt-1 md:pt-0">
+<span class="inline-flex items-center gap-1.5 text-xs text-[#6B6455] bg-[#FBF8F0] border border-[#E7DFC9] px-3 py-1.5 rounded-full font-mono shadow-xs">
+<span class="material-symbols-outlined text-xs text-[#E8A33D]" data-icon="qr_code_scanner">qr_code_scanner</span>
+              Tamper-Evident QR Seals
+            </span>
+<span class="inline-flex items-center gap-1.5 text-xs text-[#6B6455] bg-[#FBF8F0] border border-[#E7DFC9] px-3 py-1.5 rounded-full font-mono shadow-xs">
+<span class="material-symbols-outlined text-xs text-[#E8A33D]" data-icon="lock">lock</span>
+              Polygon PoS Merkle Verification
+            </span>
+<span class="inline-flex items-center gap-1.5 text-xs text-[#6B6455] bg-[#FBF8F0] border border-[#E7DFC9] px-3 py-1.5 rounded-full font-mono shadow-xs">
+<span class="material-symbols-outlined text-xs text-[#E8A33D]" data-icon="verified_user">verified_user</span>
+              Zero-Knowledge Proof Audit
+            </span>
+</div>
+</div>
+</section>
+<!-- SECTION 1 — QR SCAN SIMULATION (Interactive look & feel) -->
+<section class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg p-6 sm:p-8 shadow-sm">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<!-- Viewport Scanner Box (Interactive Look) -->
+<div class="lg:col-span-5 flex flex-col items-center justify-center p-6 bg-[#F6F1E4] border border-[#E7DFC9] rounded-lg relative overflow-hidden">
+<div class="w-56 h-56 relative flex items-center justify-center bg-white rounded shadow-inner p-3">
+<!-- Camera Corner Brackets (Amber #E8A33D) -->
+<div class="absolute -top-1 -left-1 w-6 h-6 border-t-2 border-l-2 border-[#E8A33D]"></div>
+<div class="absolute -top-1 -right-1 w-6 h-6 border-t-2 border-r-2 border-[#E8A33D]"></div>
+<div class="absolute -bottom-1 -left-1 w-6 h-6 border-b-2 border-l-2 border-[#E8A33D]"></div>
+<div class="absolute -bottom-1 -right-1 w-6 h-6 border-b-2 border-r-2 border-[#E8A33D]"></div>
+<!-- Animated Sweeping Amber Laser Beam -->
+<div class="absolute left-3 right-3 h-0.5 bg-[#E8A33D] scanner-laser pointer-events-none z-20">
+<div class="w-full h-4 bg-gradient-to-b from-[#E8A33D]/25 to-transparent -translate-y-4 pointer-events-none"></div>
+</div>
+<!-- Real Crisp Vector QR Code Simulation with Center Honey Icon -->
+<svg class="w-full h-full text-[#201C14]" fill="currentColor" viewbox="0 0 100 100">
+<!-- QR Position Detection Patterns -->
+<!-- Top-Left Corner -->
+<path d="M4 4h28v28H4V4zm4 4v20h20V8H8zm4 4h12v12H12V12z"></path>
+<!-- Top-Right Corner -->
+<path d="M68 4h28v28H68V4zm4 4v20h20V8H72zm4 4h12v12H76V12z"></path>
+<!-- Bottom-Left Corner -->
+<path d="M4 68h28v28H4V68zm4 4v20h20V72H8zm4 4h12v12H12V76z"></path>
+<!-- Authentic Scattered Data Matrices (Dehradun Honey Provenance Hash) -->
+<rect height="6" width="6" x="36" y="8"></rect>
+<rect height="6" width="6" x="46" y="8"></rect>
+<rect height="6" width="6" x="56" y="12"></rect>
+<rect height="6" width="6" x="36" y="20"></rect>
+<rect height="6" width="6" x="48" y="24"></rect>
+<rect height="6" width="6" x="8" y="36"></rect>
+<rect height="6" width="6" x="20" y="44"></rect>
+<rect height="6" width="6" x="8" y="52"></rect>
+<rect height="6" width="6" x="68" y="36"></rect>
+<rect height="6" width="6" x="80" y="40"></rect>
+<rect height="6" width="6" x="88" y="48"></rect>
+<rect height="6" width="6" x="74" y="56"></rect>
+<rect height="6" width="6" x="36" y="68"></rect>
+<rect height="6" width="6" x="48" y="74"></rect>
+<rect height="6" width="6" x="40" y="86"></rect>
+<rect height="6" width="6" x="54" y="84"></rect>
+<rect height="6" width="6" x="68" y="80"></rect>
+<rect height="6" width="6" x="84" y="72"></rect>
+<rect height="6" width="6" x="80" y="88"></rect>
+<!-- Central Emblem / Guard Token Area -->
+<rect fill="#FBF8F0" height="20" rx="3" stroke="#E8A33D" stroke-width="1.5" width="20" x="40" y="40"></rect>
+<circle cx="50" cy="50" fill="#E8A33D" r="6"></circle>
+<path d="M50 46l2.5 4.5h-5z" fill="#F6F1E4"></path>
+</svg>
+</div>
+<p class="mt-4 text-xs font-medium text-[#6B6455] flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-[#E8A33D]" data-icon="photo_camera">photo_camera</span>
+              Scan the QR code on your honey jar label
+            </p>
+</div>
+<!-- Batch ID Manual Entry Form & Confirmation State -->
+<div class="lg:col-span-7 space-y-6">
+<div class="space-y-2">
+<div class="flex items-center gap-2">
+<span class="text-xs font-mono text-[#6B6455] tracking-wide">OR ENTER BATCH ID MANUALLY</span>
+<span class="h-px bg-[#E7DFC9] flex-1"></span>
+</div>
+<h2 class="font-headline text-xl text-[#201C14] font-semibold">
+                Direct Cryptographic Batch Query
+              </h2>
+<p class="text-sm text-[#6B6455] leading-relaxed">
+                Every sealed jar has an alphanumeric ID embedded into the tamper-proof cap seal matching its on-chain digital twin.
+              </p>
+</div>
+<!-- Form Row -->
+<div class="flex flex-col sm:flex-row gap-3">
+<div class="relative flex-1">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6B6455]">
+<span class="material-symbols-outlined text-lg" data-icon="tag">tag</span>
+</div>
+<input class="w-full pl-10 pr-10 py-3 bg-[#F6F1E4] border border-[#E7DFC9] rounded text-[#201C14] font-mono text-sm font-semibold tracking-wider focus:outline-none focus:ring-1 focus:ring-[#E8A33D] focus:border-[#E8A33D] transition-colors" type="text" value="HC-MP04-A3F1-26-0007"/>
+<button class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#6B6455] hover:text-[#201C14] transition-colors" title="Copy Batch ID">
+<span class="material-symbols-outlined text-base" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+<button class="bg-[#E8A33D] hover:bg-[#C97A2B] text-[#201C14] font-semibold text-sm px-6 py-3 rounded transition-all duration-150 active:scale-95 shadow-sm inline-flex items-center justify-center gap-2 whitespace-nowrap">
+<span class="material-symbols-outlined text-lg text-[#201C14]" data-icon="verified_user">verified_user</span>
+                Verify Authenticity
+              </button>
+</div>
+<!-- Verification State Badge (Live Proof Status) -->
+<div class="flex items-center gap-3 p-3.5 bg-[#E8DCC3]/25 border border-[#E7DFC9] rounded-lg">
+<div class="w-3 h-3 rounded-full bg-[#E8A33D] pulse-dot shrink-0"></div>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-mono text-[#201C14] font-medium truncate">
+                  Status: 100% Cryptographically Verified on Polygon PoS (Block #58219420)
+                </p>
+<p class="text-xs text-[#6B6455] font-body mt-0.5">
+                  Proof anchored 12 days ago via zero-knowledge merkle commitment.
+                </p>
+</div>
+<span class="material-symbols-outlined text-base text-[#E8A33D] shrink-0" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2 — VERIFIED BATCH LISTING (Cryptographic Manifest Card) -->
+<section class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg p-6 sm:p-8 shadow-sm space-y-6">
+<!-- Card Header Badge -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E7DFC9]">
+<div class="flex items-center gap-3">
+<span class="inline-flex items-center gap-1.5 bg-[#F6F1E4] border border-[#E8A33D]/60 text-[#201C14] text-xs px-3.5 py-1.5 rounded-full font-medium shadow-xs">
+<span class="material-symbols-outlined text-sm text-[#E8A33D]" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+              Verified Batch — Authentic Forest Wildflower
+            </span>
+<span class="text-xs font-mono text-[#6B6455] hidden md:inline">Tier 1 A-Grade Registry</span>
+</div>
+<div class="text-right">
+<span class="text-xs font-mono text-[#6B6455]">Registry Reference: </span>
+<span class="text-xs font-mono font-semibold text-[#201C14]">IN-UT-2026-HC09</span>
+</div>
+</div>
+<!-- Manifest Data Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Product Name & Weight -->
+<div class="space-y-1">
+<p class="text-xs font-body text-[#6B6455]">Product Name &amp; Specification</p>
+<p class="font-headline text-lg font-bold text-[#201C14]">Forest Wildflower Honey, 500 g</p>
+<p class="text-xs text-[#6B6455]">Single-Origin Raw &amp; Unfiltered • Himalayan Foothills</p>
+</div>
+<!-- Certified Price & Fair-Trade Split -->
+<div class="space-y-1">
+<p class="text-xs font-body text-[#6B6455]">Certified Price &amp; Beekeeper Share</p>
+<div class="flex items-baseline gap-2">
+<span class="font-mono text-2xl font-bold text-[#E8A33D]">₹649</span>
+<span class="text-xs text-[#6B6455]">MSRP Verified</span>
+</div>
+<p class="text-xs font-mono text-[#201C14] flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D]"></span>
+              ₹480 direct to apiary cooperative (74.0% share)
+            </p>
+</div>
+<!-- Batch ID -->
+<div class="space-y-1">
+<p class="text-xs font-body text-[#6B6455]">Batch Identifier</p>
+<div class="flex items-center gap-2">
+<span class="font-mono text-base font-semibold text-[#201C14] bg-[#F6F1E4] px-2.5 py-1 rounded border border-[#E7DFC9]">
+                HC-MP04-A3F1-26-0007
+              </span>
+<span class="material-symbols-outlined text-sm text-[#6B6455]" data-icon="fingerprint">fingerprint</span>
+</div>
+<p class="text-xs font-mono text-[#6B6455]">Lot size: 40 jars • Packaged at Source</p>
+</div>
+<!-- Beekeeper / Producer -->
+<div class="space-y-1">
+<p class="text-xs font-body text-[#6B6455]">Beekeeper / Certified Producer</p>
+<p class="text-sm font-semibold text-[#201C14]">Sample Apiary Cooperative — Pod #04</p>
+<p class="text-xs text-[#6B6455]">Dehradun Valley, Uttarakhand (Alt: 1,420m)</p>
+</div>
+<!-- Hive Source & Telemetry Vitality -->
+<div class="space-y-1">
+<p class="text-xs font-body text-[#6B6455]">Hive Sentinel Source</p>
+<div class="flex items-center gap-2">
+<span class="text-sm font-mono font-semibold text-[#201C14]">HIVE-007 (Sentinel Node)</span>
+<span class="w-2 h-2 rounded-full bg-[#E8A33D] pulse-dot"></span>
+</div>
+<p class="text-xs text-[#6B6455] font-body">Colony telemetry healthy 28 of 30 days during flow</p>
+</div>
+<!-- Harvest Timestamp & Extraction Tare -->
+<div class="space-y-1">
+<p class="text-xs font-body text-[#6B6455]">Harvest Extraction Timestamp</p>
+<p class="text-sm font-semibold text-[#201C14]">18 Oct 2026, 09:40 IST</p>
+<p class="text-xs font-mono text-[#6B6455]">Tare delta -20.4 kg verified via dual load cells</p>
+</div>
+<!-- Lab Quality Report -->
+<div class="space-y-1.5 md:col-span-2">
+<p class="text-xs font-body text-[#6B6455]">Lab Quality Parameters (NABL Accredited)</p>
+<div class="flex flex-wrap items-center gap-2">
+<span class="text-xs font-mono bg-[#F6F1E4] border border-[#E7DFC9] px-2 py-1 rounded text-[#201C14]">
+                Moisture: 17.2% (&lt;18% req)
+              </span>
+<span class="text-xs font-mono bg-[#F6F1E4] border border-[#E7DFC9] px-2 py-1 rounded text-[#201C14]">
+                HMF: 11 mg/kg (&lt;40 max)
+              </span>
+<span class="text-xs font-mono bg-[#F6F1E4] border border-[#E7DFC9] px-2 py-1 rounded text-[#201C14]">
+                Pollen: 84% Multifloral
+              </span>
+<a class="inline-flex items-center gap-1 text-xs text-[#201C14] hover:text-[#E8A33D] font-medium underline underline-offset-2 ml-1" href="#">
+<span class="material-symbols-outlined text-xs" data-icon="description">description</span>
+                View Certificate PDF (SHA-256 Verified)
+              </a>
+</div>
+</div>
+<!-- Anchored Proof & Explorer Link -->
+<div class="space-y-1">
+<p class="text-xs font-body text-[#6B6455]">On-Chain Anchor Transaction</p>
+<a class="text-xs font-mono text-[#201C14] hover:text-[#E8A33D] font-medium flex items-center gap-1.5 truncate" href="#">
+<span class="material-symbols-outlined text-xs text-[#E8A33D]" data-icon="link">link</span>
+<span>19 Oct 2026, tx 0x9f3b8...c21</span>
+<span class="material-symbols-outlined text-xs" data-icon="open_in_new">open_in_new</span>
+</a>
+<p class="text-xs font-mono text-[#6B6455]">Gas cost subsidized by MSME Proof Anchor Pool</p>
+</div>
+</div>
+<!-- Merkle Integrity Footnote -->
+<div class="pt-4 border-t border-[#E7DFC9] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+<div class="flex items-center gap-2 font-mono text-xs text-[#6B6455]">
+<span class="font-semibold text-[#201C14]">Cryptographic Merkle Root:</span>
+<code class="bg-[#F6F1E4] px-2 py-0.5 rounded border border-[#E7DFC9] text-[#201C14]">0x1f90b...a49cc</code>
+<span class="text-[#E8A33D] font-medium">(State 3: Immutable Polygon Anchor)</span>
+</div>
+<p class="text-[11px] text-[#6B6455] italic">
+            Sample data for illustration — names, dates, price and transaction ID are placeholders.
+          </p>
+</div>
+</section>
+<!-- SECTION 3 — HIVE WEIGHT OVER THE FLOW SEASON (Telemetry Chart) -->
+<section class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg p-6 sm:p-8 shadow-sm space-y-6">
+<!-- Section Header with Yield Badges -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E7DFC9]">
+<div class="space-y-1">
+<h2 class="font-headline text-xl sm:text-2xl font-bold text-[#201C14]">
+              Hive Weight Over the Flow Season
+            </h2>
+<p class="text-sm text-[#6B6455]">
+              Continuous tare logging across July to November demonstrating nectar accumulation curve, environmental disruptions, and harvest extraction.
+            </p>
+</div>
+<!-- Top-Right Telemetry Stats Badges -->
+<div class="flex flex-wrap items-center gap-2.5">
+<div class="bg-[#F6F1E4] border border-[#E7DFC9] px-3 py-1.5 rounded text-left">
+<span class="block text-[10px] font-mono text-[#6B6455] uppercase">Peak Weight</span>
+<span class="font-mono text-sm font-bold text-[#201C14]">48.4 kg</span>
+</div>
+<div class="bg-[#F6F1E4] border border-[#E7DFC9] px-3 py-1.5 rounded text-left">
+<span class="block text-[10px] font-mono text-[#6B6455] uppercase">Net Seasonal Yield</span>
+<span class="font-mono text-sm font-bold text-[#E8A33D]">20.2 kg / hive</span>
+</div>
+<div class="bg-[#F6F1E4] border border-[#E7DFC9] px-3 py-1.5 rounded text-left">
+<span class="block text-[10px] font-mono text-[#6B6455] uppercase">Extraction Purity</span>
+<span class="font-mono text-sm font-bold text-[#201C14]">99.4%</span>
+</div>
+</div>
+</div>
+<!-- Custom Telemetry SVG Chart -->
+<div class="relative w-full bg-[#F6F1E4] border border-[#E7DFC9] rounded-lg p-4 sm:p-6 overflow-x-auto">
+<div class="min-w-[640px]">
+<svg class="w-full h-72 overflow-visible" viewbox="0 0 800 320">
+<defs>
+<!-- Honey Gradient Under Curve -->
+<lineargradient id="honeyCurveGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#E8A33D" stop-opacity="0.32"></stop>
+<stop offset="100%" stop-color="#E8A33D" stop-opacity="0.0"></stop>
+</lineargradient>
+<!-- Marker dots pattern -->
+<filter height="140%" id="shadow" width="140%" x="-20%" y="-20%">
+<fedropshadow dx="0" dy="1" flood-opacity="0.15" stddeviation="1"></fedropshadow>
+</filter>
+</defs>
+<!-- Horizontal Gridlines & Y-Axis Labels (10kg to 50kg) -->
+<!-- 50 kg -->
+<line stroke="#E7DFC9" stroke-dasharray="4 4" stroke-width="1" x1="50" x2="770" y1="30" y2="30"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="40" y="34">50 kg</text>
+<!-- 40 kg -->
+<line stroke="#E7DFC9" stroke-dasharray="4 4" stroke-width="1" x1="50" x2="770" y1="90" y2="90"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="40" y="94">40 kg</text>
+<!-- 30 kg -->
+<line stroke="#E7DFC9" stroke-dasharray="4 4" stroke-width="1" x1="50" x2="770" y1="150" y2="150"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="40" y="154">30 kg</text>
+<!-- 20 kg -->
+<line stroke="#E7DFC9" stroke-dasharray="4 4" stroke-width="1" x1="50" x2="770" y1="210" y2="210"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="40" y="214">20 kg</text>
+<!-- 10 kg Baseline -->
+<line stroke="#E7DFC9" stroke-width="1" x1="50" x2="770" y1="270" y2="270"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="10" text-anchor="end" x="40" y="274">10 kg</text>
+<!-- Vertical Timeline Demarcations (Jul, Aug, Sep, Oct, Nov) -->
+<line stroke="#E7DFC9" stroke-width="1" x1="60" x2="60" y1="30" y2="270"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="11" text-anchor="middle" x="60" y="292">01 Jul</text>
+<line stroke="#E7DFC9" stroke-width="1" x1="230" x2="230" y1="30" y2="270"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="11" text-anchor="middle" x="230" y="292">01 Aug</text>
+<line stroke="#E7DFC9" stroke-width="1" x1="410" x2="410" y1="30" y2="270"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="11" text-anchor="middle" x="410" y="292">01 Sep</text>
+<line stroke="#E7DFC9" stroke-width="1" x1="580" x2="580" y1="30" y2="270"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="11" text-anchor="middle" x="580" y="292">01 Oct</text>
+<line stroke="#E7DFC9" stroke-width="1" x1="750" x2="750" y1="30" y2="270"></line>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="11" text-anchor="middle" x="750" y="292">01 Nov</text>
+<!-- Area Fill Under Curve -->
+<path d="M 60 210 
+                   C 140 200, 190 145, 250 138 
+                   C 290 140, 320 162, 350 162 
+                   C 400 162, 460 70, 560 40 
+                   C 600 38, 625 40, 630 42 
+                   L 638 168 
+                   C 660 170, 710 172, 750 172 
+                   L 750 270 
+                   L 60 270 Z" fill="url(#honeyCurveGrad)"></path>
+<!-- The Amber Telemetry Weight Line -->
+<path d="M 60 210 
+                   C 140 200, 190 145, 250 138 
+                   C 290 140, 320 162, 350 162 
+                   C 400 162, 460 70, 560 40 
+                   C 600 38, 625 40, 630 42 
+                   L 638 168 
+                   C 660 170, 710 172, 750 172" fill="none" stroke="#E8A33D" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+<!-- DATA POINT 1: Initial Buildup (Jul-Aug) -->
+<circle cx="60" cy="210" fill="#5C3D2E" r="4.5" stroke="#E8A33D" stroke-width="2"></circle>
+<circle cx="250" cy="138" fill="#5C3D2E" r="4.5" stroke="#E8A33D" stroke-width="2"></circle>
+<!-- CALLOUT 1: Late August Monsoon Rain Dip -->
+<circle cx="350" cy="162" fill="#C9622E" r="5" stroke="#F6F1E4" stroke-width="2"></circle>
+<!-- Annotation Pin -->
+<line stroke="#C9622E" stroke-width="1.2" x1="350" x2="350" y1="162" y2="195"></line>
+<g transform="translate(260, 200)">
+<rect fill="#FBF8F0" height="24" rx="4" stroke="#C9622E" stroke-width="1" width="180"></rect>
+<text fill="#201C14" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="600" x="8" y="16">
+                  Monsoon Confinement (-3.8 kg)
+                </text>
+</g>
+<!-- CALLOUT 2: Peak Bloom Oct 15 (48.4 kg) -->
+<circle cx="630" cy="42" fill="#E8A33D" r="5" stroke="#201C14" stroke-width="2"></circle>
+<!-- Peak Callout -->
+<line stroke="#E8A33D" stroke-width="1.2" x1="630" x2="630" y1="42" y2="18"></line>
+<g transform="translate(540, 2)">
+<rect fill="#201C14" height="22" rx="4" width="135"></rect>
+<text fill="#E8A33D" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="600" x="8" y="15">
+                  Peak Tare: 48.4 kg
+                </text>
+</g>
+<!-- CALLOUT 3: Harvest Extraction Step (-20.4 kg Tare Delta) -->
+<line stroke="#A6371F" stroke-dasharray="3 3" stroke-width="2" x1="630" x2="638" y1="42" y2="168"></line>
+<circle cx="638" cy="168" fill="#A6371F" r="5" stroke="#F6F1E4" stroke-width="2"></circle>
+<!-- Extraction Flag -->
+<g transform="translate(530, 95)">
+<rect fill="#FBF8F0" height="38" rx="4" stroke="#A6371F" stroke-width="1" width="185"></rect>
+<text fill="#A6371F" font-family="'Inter', sans-serif" font-size="9.5" font-weight="600" x="8" y="16">
+                  Honey Harvest Extraction
+                </text>
+<text fill="#201C14" font-family="'JetBrains Mono', monospace" font-size="9" x="8" y="30">
+                  48.4 kg → 28.0 kg (-20.4 kg)
+                </text>
+</g>
+<!-- CALLOUT 4: Winter Comb Tare Reserve -->
+<circle cx="750" cy="172" fill="#5C3D2E" r="4.5" stroke="#E8A33D" stroke-width="2"></circle>
+<g transform="translate(640, 215)">
+<rect fill="#F6F1E4" height="20" rx="3" stroke="#E7DFC9" stroke-width="1" width="140"></rect>
+<text fill="#6B6455" font-family="'JetBrains Mono', monospace" font-size="8.5" x="6" y="14">
+                  Post-harvest Winter Reserve
+                </text>
+</g>
+</svg>
+</div>
+</div>
+<!-- Telemetry Integrity Callout Summary -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 font-mono text-xs text-[#6B6455]">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-sm text-[#E8A33D]" data-icon="sensors">sensors</span>
+<span>Dual redundant HX711 strain gauge transducers calibrated every midnight at zero colony flight.</span>
+</div>
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-sm text-[#E8A33D]" data-icon="cloud">cloud</span>
+<span>Confinement periods match regional IMD satellite precipitation indices within 98.6% tolerance.</span>
+</div>
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-sm text-[#E8A33D]" data-icon="security">security</span>
+<span>Extraction delta matches jar batch lot packaging run (40 units × 500g net = 20.0 kg + comb allowance).</span>
+</div>
+</div>
+</section>
+<!-- SECTION 4 — WHAT THIS SYSTEM CANNOT PROVE (Honest Apiculture Integrity Callout) -->
+<section class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg p-6 sm:p-8 space-y-5">
+<div class="flex items-center gap-3">
+<div class="w-7 h-7 rounded bg-[#5C3D2E]/10 flex items-center justify-center text-[#5C3D2E]">
+<span class="material-symbols-outlined text-lg" data-icon="info">info</span>
+</div>
+<div>
+<h3 class="font-headline text-lg sm:text-xl font-bold text-[#201C14]">
+              What This System Cannot Prove (Apiculture Integrity Boundaries)
+            </h3>
+<p class="text-xs text-[#6B6455]">
+              Decentralized consensus guarantees historical immutability, not scientific omnipotence.
+            </p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+<!-- Boundary Item 1 -->
+<div class="space-y-1.5 p-4 rounded bg-[#F6F1E4] border border-[#E7DFC9]">
+<div class="flex items-center gap-2">
+<span class="font-mono text-xs font-bold text-[#E8A33D]">01</span>
+<h4 class="font-body text-sm font-semibold text-[#201C14]">
+                A blockchain proves a record was not changed after anchoring. It does not prove the honey is pure.
+              </h4>
+</div>
+<p class="text-xs text-[#6B6455] leading-relaxed pl-6">
+              If an adulterated honey syrup was certified and sealed by a dishonest actor offline, the blockchain merely preserves that fraudulent assertion permanently. Our defense relies on combining physical tamper seals with hardware telemetry and independent lab hash validation.
+            </p>
+</div>
+<!-- Boundary Item 2 -->
+<div class="space-y-1.5 p-4 rounded bg-[#F6F1E4] border border-[#E7DFC9]">
+<div class="flex items-center gap-2">
+<span class="font-mono text-xs font-bold text-[#E8A33D]">02</span>
+<h4 class="font-body text-sm font-semibold text-[#201C14]">
+                Hive weight shows nectar flow, not floral source.
+              </h4>
+</div>
+<p class="text-xs text-[#6B6455] leading-relaxed pl-6">
+              Rapid hive weight gains demonstrate healthy colony foraging velocity and super filling, but botanical and floral origin (e.g. Mustard vs. Wild Acacia vs. Multifloral) requires accredited microscopic melissopalynology pollen profiling linked in the lab manifest.
+            </p>
+</div>
+<!-- Boundary Item 3 -->
+<div class="space-y-1.5 p-4 rounded bg-[#F6F1E4] border border-[#E7DFC9]">
+<div class="flex items-center gap-2">
+<span class="font-mono text-xs font-bold text-[#E8A33D]">03</span>
+<h4 class="font-body text-sm font-semibold text-[#201C14]">
+                Health thresholds are prototype rules.
+              </h4>
+</div>
+<p class="text-xs text-[#6B6455] leading-relaxed pl-6">
+              Brood core temperature (34.5°C ± 1.5°C) and acoustic swarm detection frequencies are tuned to standard <em>Apis cerana indica</em> and <em>Apis mellifera</em> colony baselines. Extreme Himalayan cloudbursts or abrupt unseasonal cold fronts can cause transient false anomalies.
+            </p>
+</div>
+<!-- Boundary Item 4 -->
+<div class="space-y-1.5 p-4 rounded bg-[#F6F1E4] border border-[#E7DFC9]">
+<div class="flex items-center gap-2">
+<span class="font-mono text-xs font-bold text-[#E8A33D]">04</span>
+<h4 class="font-body text-sm font-semibold text-[#201C14]">
+                Prices and revenue splits are estimates.
+              </h4>
+</div>
+<p class="text-xs text-[#6B6455] leading-relaxed pl-6">
+              Fair-trade baseline shares (₹480/jar) are indexed to regional cooperative Minimum Support Prices (MSP), local self-help federations, and direct extraction logistics. Dynamic secondary market markups by retail partners remain outside the primary smart contract lock.
+            </p>
+</div>
+</div>
+</section>
+</main>
+<!-- FOOTER (Matching Shared Components JSON strictly) -->
+<footer class="bg-[#201C14] dark:bg-[#15120C] border-t border-[#E8DCC3]/20 mt-16">
+<div class="w-full px-6 md:px-12 py-10 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+<!-- Identity & Copyright -->
+<div class="space-y-2 text-center md:text-left">
+<div class="flex items-center justify-center md:justify-start gap-2">
+<span class="material-symbols-outlined text-[#E8A33D] text-lg" data-icon="hexagon" style="font-variation-settings: 'FILL' 1;">hexagon</span>
+<span class="font-headline text-base font-bold text-[#F6F1E4]">HoneyChain</span>
+<span class="font-mono text-[11px] text-[#E8A33D] px-1.5 py-0.5 border border-[#E8A33D]/30 rounded">SIH PS-26021</span>
+</div>
+<p class="font-body text-xs text-[#E8DCC3]/60 max-w-lg">
+            © 2025 HoneyChain. Decentralized Apiculture &amp; Honey Provenance Architecture.
+          </p>
+</div>
+<!-- Links from Blueprint JSON -->
+<div class="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-xs font-body">
+<a class="text-[#E8DCC3]/70 hover:text-[#E8A33D] transition-colors duration-150" href="#">Architecture Blueprint</a>
+<a class="text-[#E8DCC3]/70 hover:text-[#E8A33D] transition-colors duration-150" href="#">Smart Contracts</a>
+<a class="text-[#E8DCC3]/70 hover:text-[#E8A33D] transition-colors duration-150" href="#">Telemetry Specs</a>
+<a class="text-[#E8DCC3]/70 hover:text-[#E8A33D] transition-colors duration-150" href="#">Hackathon Submission</a>
+<a class="text-[#E8DCC3]/70 hover:text-[#E8A33D] transition-colors duration-150 font-mono" href="#">Node Registry</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>
