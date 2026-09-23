@@ -1,0 +1,7 @@
+{
+  "name": "honeychain",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npx serve frontend -p 3000"
+  }
+}
