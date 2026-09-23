@@ -1,7 +1,7 @@
 # HoneyChain — Antigravity IDE Master Build Prompt
 
 **Project:** HoneyChain — blockchain honey traceability & smart beekeeping
-**Team:** Brain Hustlers · Smart India Hackathon 2026
+**Team:** Neural Nomads · Smart India Hackathon 2026
 **Problem Statement:** 26021 (Ministry of MSME, Coordination Section) — *"Honey Chain: A block chain-based system for honey traceability and smart beekeeping management."*
 
 This file is built to be copy-pasted straight into Google Antigravity. Part 0 sets up the repo's `.agent/` brain (rules + workflows) — do this once, first. Part 1 is the single master prompt you drop into the **Agent Manager** to generate the whole multi-page site in one run. Part 2 is the full page-by-page + content spec Part 1 refers back to, so the agent never has to invent facts you didn't give it.
@@ -41,7 +41,7 @@ activation: always_on
   rounded-full shape, small mono or sans label — never solid-fill chips.
 - Never use a tracked-out ALL-CAPS eyebrow label above headings. Never join meta text with
   middle dots as decoration unless it is genuinely a compact metadata string like the
-  existing "Team Brain Hustlers · SIH 2026" pill. Never append a "→" glyph to every link.
+  existing "Team Neural Nomads · SIH 2026" pill. Never append a "→" glyph to every link.
 - Status colors (used for hive/pod health everywhere in the app): healthy = #E8A33D fill /
   amber, moderate = #D4901F with a "~" glyph, warning = #C9622E with a "▲" glyph, critical =
   #A6371F with a "!" glyph. These four states and their glyphs must be visually identical
@@ -129,7 +129,7 @@ Open **Manager view**, start a new task, paste everything in the block below as 
 
 ```
 You are building HoneyChain, a multi-page marketing + product demo website for a Smart
-India Hackathon 2026 project (Team Brain Hustlers, Problem Statement 26021, Ministry of
+India Hackathon 2026 project (Team Neural Nomads, Problem Statement 26021, Ministry of
 MSME). Follow .agent/rules/design-system.md and .agent/rules/engineering.md exactly — they
 are always-on constraints, not suggestions. Use the /build_page workflow once per route and
 /verify_all once the full site is scaffolded.
@@ -152,14 +152,14 @@ SITE MAP (build every route, in this order)
 7. /marketplace — Shop / marketplace connectors, the sample product listing, five ways the
    shop earns
 8. /economics — Cost of a pod vs. yield, break-even, the build-it-in-four-steps roadmap
-9. /team — Team Brain Hustlers, SIH 2026, links back to the live dashboard and verify pages
+9. /team — Team Neural Nomads, SIH 2026, links back to the live dashboard and verify pages
 Shared: sticky top nav (Home, Problem, Architecture, Dashboard, Traceability, Verify,
 Marketplace, Economics, Team), footer with problem-statement ID, org, and theme.
 
 HOME PAGE HERO — reproduce this reference layout exactly (from the attached screenshot),
 restyled with the design-system tokens, not copied pixel-for-pixel:
 - top-left: small orange dot + "HoneyChain" wordmark
-- top-right: hairline pill "Team Brain Hustlers · SIH 2026"
+- top-right: hairline pill "Team Neural Nomads · SIH 2026"
 - below that: hairline pill "Live Prototype · Smart India Hackathon 2026"
 - large serif H1: "Blockchain Honey Traceability"
 - one-line subhead: "Live hive monitoring, batch registration, honey testing, blockchain
@@ -411,7 +411,7 @@ Footnote: "₹100 sits at the top of the farm-gate range small beekeepers report
 
 ### 2.14 Team page (`/team`)
 
-- Team name: **Brain Hustlers**
+- Team name: **Neural Nomads**
 - Event: **Smart India Hackathon 2026**
 - Project: **HoneyChain**
 - Status pill: **Live Prototype**
