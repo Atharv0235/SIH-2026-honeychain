@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>HoneyChain — Verify a Batch</title>
+<title>HoneyChain â€” Verify a Batch</title>
 <!-- Google Fonts: Source Serif 4, Inter, JetBrains Mono -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -98,7 +98,7 @@
 <div class="flex items-center gap-3">
 <div class="border border-[#E8DCC3]/30 text-[#F6F1E4]/90 text-xs px-3.5 py-1.5 rounded-full bg-[#4A2F22]/60 font-label tracking-wide flex items-center gap-1.5 shadow-inner">
 <span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D]"></span>
-<span>Team Neural Nomads · SIH 2026</span>
+<span>Team Neural Nomads Â· SIH 2026</span>
 </div>
 </div>
 </div>
@@ -142,12 +142,12 @@
 </div>
 </div>
 </section>
-<!-- SECTION 1 — QR SCAN SIMULATION (Interactive look & feel) -->
+<!-- SECTION 1 â€” QR SCAN SIMULATION (Interactive look & feel) -->
 <section class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg p-6 sm:p-8 shadow-sm">
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
 <!-- Viewport Scanner Box (Interactive Look) -->
-<div class="lg:col-span-5 flex flex-col items-center justify-center p-6 bg-[#F6F1E4] border border-[#E7DFC9] rounded-lg relative overflow-hidden">
-<div class="w-56 h-56 relative flex items-center justify-center bg-white rounded shadow-inner p-3">
+<a href="#verified-batch" class="lg:col-span-5 flex flex-col items-center justify-center p-6 bg-[#F6F1E4] border border-[#E7DFC9] rounded-lg relative overflow-hidden group cursor-pointer hover:border-[#E8A33D] hover:shadow-md transition-all duration-300">
+<div class="w-56 h-56 relative flex items-center justify-center bg-white rounded shadow-inner p-3 group-hover:scale-105 transition-transform duration-300">
 <!-- Camera Corner Brackets (Amber #E8A33D) -->
 <div class="absolute -top-1 -left-1 w-6 h-6 border-t-2 border-l-2 border-[#E8A33D]"></div>
 <div class="absolute -top-1 -right-1 w-6 h-6 border-t-2 border-r-2 border-[#E8A33D]"></div>
@@ -196,7 +196,7 @@
 <span class="material-symbols-outlined text-base text-[#E8A33D]" data-icon="photo_camera">photo_camera</span>
               Scan the QR code on your honey jar label
             </p>
-</div>
+</a>
 <!-- Batch ID Manual Entry Form & Confirmation State -->
 <div class="lg:col-span-7 space-y-6">
 <div class="space-y-2">
@@ -243,117 +243,133 @@
 </div>
 </div>
 </section>
-<!-- SECTION 2 — VERIFIED BATCH LISTING (Cryptographic Manifest Card) -->
-<section class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg p-6 sm:p-8 shadow-sm space-y-6">
-<!-- Card Header Badge -->
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E7DFC9]">
-<div class="flex items-center gap-3">
-<span class="inline-flex items-center gap-1.5 bg-[#F6F1E4] border border-[#E8A33D]/60 text-[#201C14] text-xs px-3.5 py-1.5 rounded-full font-medium shadow-xs">
-<span class="material-symbols-outlined text-sm text-[#E8A33D]" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
-              Verified Batch — Authentic Forest Wildflower
-            </span>
-<span class="text-xs font-mono text-[#6B6455] hidden md:inline">Tier 1 A-Grade Registry</span>
-</div>
-<div class="text-right">
-<span class="text-xs font-mono text-[#6B6455]">Registry Reference: </span>
-<span class="text-xs font-mono font-semibold text-[#201C14]">IN-UT-2026-HC09</span>
-</div>
-</div>
-<!-- Manifest Data Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-<!-- Product Name & Weight -->
-<div class="space-y-1">
-<p class="text-xs font-body text-[#6B6455]">Product Name &amp; Specification</p>
-<p class="font-headline text-lg font-bold text-[#201C14]">Forest Wildflower Honey, 500 g</p>
-<p class="text-xs text-[#6B6455]">Single-Origin Raw &amp; Unfiltered • Himalayan Foothills</p>
-</div>
-<!-- Certified Price & Fair-Trade Split -->
-<div class="space-y-1">
-<p class="text-xs font-body text-[#6B6455]">Certified Price &amp; Beekeeper Share</p>
-<div class="flex items-baseline gap-2">
-<span class="font-mono text-2xl font-bold text-[#E8A33D]">?649</span>
-<span class="text-xs text-[#6B6455]">MSRP Verified</span>
-</div>
-<p class="text-xs font-mono text-[#201C14] flex items-center gap-1">
-<span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D]"></span>
-              ?480 direct to apiary cooperative (74.0% share)
-            </p>
-</div>
-<!-- Batch ID -->
-<div class="space-y-1">
-<p class="text-xs font-body text-[#6B6455]">Batch Identifier</p>
-<div class="flex items-center gap-2">
-<span class="font-mono text-base font-semibold text-[#201C14] bg-[#F6F1E4] px-2.5 py-1 rounded border border-[#E7DFC9]">
-                HC-MP04-A3F1-26-0007
-              </span>
-<span class="material-symbols-outlined text-sm text-[#6B6455]" data-icon="fingerprint">fingerprint</span>
-</div>
-<p class="text-xs font-mono text-[#6B6455]">Lot size: 40 jars • Packaged at Source</p>
-</div>
-<!-- Beekeeper / Producer -->
-<div class="space-y-1">
-<p class="text-xs font-body text-[#6B6455]">Beekeeper / Certified Producer</p>
-<p class="text-sm font-semibold text-[#201C14]">Sample Apiary Cooperative — Pod #04</p>
-<p class="text-xs text-[#6B6455]">Dehradun Valley, Uttarakhand (Alt: 1,420m)</p>
-</div>
-<!-- Hive Source & Telemetry Vitality -->
-<div class="space-y-1">
-<p class="text-xs font-body text-[#6B6455]">Hive Sentinel Source</p>
-<div class="flex items-center gap-2">
-<span class="text-sm font-mono font-semibold text-[#201C14]">HIVE-007 (Sentinel Node)</span>
-<span class="w-2 h-2 rounded-full bg-[#E8A33D] pulse-dot"></span>
-</div>
-<p class="text-xs text-[#6B6455] font-body">Colony telemetry healthy 28 of 30 days during flow</p>
-</div>
-<!-- Harvest Timestamp & Extraction Tare -->
-<div class="space-y-1">
-<p class="text-xs font-body text-[#6B6455]">Harvest Extraction Timestamp</p>
-<p class="text-sm font-semibold text-[#201C14]">18 Oct 2026, 09:40 IST</p>
-<p class="text-xs font-mono text-[#6B6455]">Tare delta -20.4 kg verified via dual load cells</p>
-</div>
-<!-- Lab Quality Report -->
-<div class="space-y-1.5 md:col-span-2">
-<p class="text-xs font-body text-[#6B6455]">Lab Quality Parameters (NABL Accredited)</p>
-<div class="flex flex-wrap items-center gap-2">
-<span class="text-xs font-mono bg-[#F6F1E4] border border-[#E7DFC9] px-2 py-1 rounded text-[#201C14]">
-                Moisture: 17.2% (&lt;18% req)
-              </span>
-<span class="text-xs font-mono bg-[#F6F1E4] border border-[#E7DFC9] px-2 py-1 rounded text-[#201C14]">
-                HMF: 11 mg/kg (&lt;40 max)
-              </span>
-<span class="text-xs font-mono bg-[#F6F1E4] border border-[#E7DFC9] px-2 py-1 rounded text-[#201C14]">
-                Pollen: 84% Multifloral
-              </span>
-<a class="inline-flex items-center gap-1 text-xs text-[#201C14] hover:text-[#E8A33D] font-medium underline underline-offset-2 ml-1" href="#">
-<span class="material-symbols-outlined text-xs" data-icon="description">description</span>
-                View Certificate PDF (SHA-256 Verified)
-              </a>
-</div>
-</div>
-<!-- Anchored Proof & Explorer Link -->
-<div class="space-y-1">
-<p class="text-xs font-body text-[#6B6455]">On-Chain Anchor Transaction</p>
-<a class="text-xs font-mono text-[#201C14] hover:text-[#E8A33D] font-medium flex items-center gap-1.5 truncate" href="#">
-<span class="material-symbols-outlined text-xs text-[#E8A33D]" data-icon="link">link</span>
-<span>19 Oct 2026, tx 0x9f3b8...c21</span>
-<span class="material-symbols-outlined text-xs" data-icon="open_in_new">open_in_new</span>
-</a>
-<p class="text-xs font-mono text-[#6B6455]">Gas cost subsidized by MSME Proof Anchor Pool</p>
-</div>
-</div>
-<!-- Merkle Integrity Footnote -->
-<div class="pt-4 border-t border-[#E7DFC9] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-<div class="flex items-center gap-2 font-mono text-xs text-[#6B6455]">
-<span class="font-semibold text-[#201C14]">Cryptographic Merkle Root:</span>
-<code class="bg-[#F6F1E4] px-2 py-0.5 rounded border border-[#E7DFC9] text-[#201C14]">0x1f90b...a49cc</code>
-<span class="text-[#E8A33D] font-medium">(State 3: Immutable Polygon Anchor)</span>
-</div>
-<p class="text-[11px] text-[#6B6455] italic">
-            Sample data for illustration — names, dates, price and transaction ID are placeholders.
-          </p>
-</div>
+<!-- SECTION 2 - VERIFIED BATCH LISTING (Cryptographic Manifest Card) -->
+<section id="verified-batch" class="relative group scroll-mt-24 mb-16 mx-4 md:mx-0">
+  <!-- Glowing animated background blur -->
+  <div class="absolute -inset-1 bg-gradient-to-r from-[#E8A33D] via-[#C97A2B] to-[#5C3D2E] rounded-[2rem] blur-xl opacity-30 group-hover:opacity-70 transition duration-1000 group-hover:duration-500"></div>
+  
+  <div class="relative bg-[#1a1610] border border-[#E8A33D]/30 rounded-[2rem] p-8 sm:p-12 shadow-2xl backdrop-blur-xl overflow-hidden">
+    <!-- Abstract Hexagon Pattern Overlay -->
+    <div class="absolute -top-32 -right-32 text-[#E8A33D]/5 transform rotate-45 scale-150 pointer-events-none">
+      <svg width="400" height="400" viewBox="0 0 100 100" fill="currentColor">
+        <path d="M50 0L93.3 25V75L50 100L6.7 75V25L50 0Z" />
+      </svg>
+    </div>
+
+    <!-- Header / Authenticated Badge -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-8 border-b border-white/10 relative z-10">
+      <div class="flex items-center gap-5">
+        <div class="relative flex items-center justify-center w-16 h-16 bg-[#E8A33D]/20 rounded-full border border-[#E8A33D]/50 shadow-[0_0_30px_rgba(232,163,61,0.2)]">
+          <div class="absolute inset-0 rounded-full border-2 border-[#E8A33D]/40 border-dashed animate-[spin_10s_linear_infinite]"></div>
+          <span class="material-symbols-outlined text-3xl text-[#E8A33D]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+        </div>
+        <div>
+          <h2 class="font-headline text-2xl sm:text-3xl font-bold text-white tracking-tight mb-1 drop-shadow-md">Authentic Batch Manifest</h2>
+          <div class="inline-flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+            <p class="font-mono text-xs text-[#E8A33D] tracking-widest uppercase font-semibold">Tier 1 A-Grade Registry</p>
+          </div>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="inline-flex flex-col items-end">
+          <span class="text-xs font-mono text-white/50 mb-1">Decentralized ID</span>
+          <span class="text-sm font-mono font-bold text-[#E8A33D] bg-[#E8A33D]/10 px-3 py-1.5 rounded-lg border border-[#E8A33D]/20 shadow-inner">IN-UT-2026-HC09</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-12 pt-10 relative z-10">
+      <!-- Product Details -->
+      <div>
+        <p class="text-[10px] font-mono text-[#E8A33D] tracking-widest uppercase mb-2 font-bold">Product Specification</p>
+        <p class="font-headline text-xl font-bold text-white mb-2 leading-tight">Forest Wildflower Honey, 500g</p>
+        <p class="text-xs text-white/60">Single-Origin Raw &amp; Unfiltered Ã¢â‚¬Â¢ Himalayan Foothills</p>
+      </div>
+
+      <!-- Financials -->
+      <div>
+        <p class="text-[10px] font-mono text-[#E8A33D] tracking-widest uppercase mb-2 font-bold">Certified Price Split</p>
+        <div class="flex items-baseline gap-2 mb-3">
+          <span class="font-mono text-3xl font-bold text-white drop-shadow-md">Ã¢â€šÂ¹649</span>
+          <span class="text-xs font-medium text-white/50">MSRP</span>
+        </div>
+        <div class="flex items-center gap-2 bg-[#E8A33D]/10 border border-[#E8A33D]/30 px-3 py-2 rounded-lg inline-flex shadow-sm">
+          <span class="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_8px_#4ade80]"></span>
+          <p class="text-xs font-mono text-[#FDF4E5] font-medium">Ã¢â€šÂ¹480 direct to apiary (74%)</p>
+        </div>
+      </div>
+
+      <!-- Smart Contract ID -->
+      <div>
+        <p class="text-[10px] font-mono text-[#E8A33D] tracking-widest uppercase mb-2 font-bold">Immutable Identifier</p>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="font-mono text-sm font-bold text-white bg-white/5 px-3 py-2 rounded border border-white/10 break-all shadow-inner w-full">HC-MP04-A3F1-26-0007</span>
+        </div>
+        <p class="text-[11px] font-mono text-white/50">Lot size: 40 jars Ã¢â‚¬Â¢ Packaged at Source</p>
+      </div>
+
+      <!-- Producer -->
+      <div>
+        <p class="text-[10px] font-mono text-[#E8A33D] tracking-widest uppercase mb-2 font-bold">Certified Producer</p>
+        <p class="text-base font-bold text-white mb-1">Sample Apiary Cooperative</p>
+        <p class="text-xs text-white/60">Pod #04 Ã¢â‚¬Â¢ Dehradun Valley (Alt: 1,420m)</p>
+      </div>
+
+      <!-- Telemetry -->
+      <div>
+        <p class="text-[10px] font-mono text-[#E8A33D] tracking-widest uppercase mb-2 font-bold">Sentinel Source</p>
+        <div class="flex items-center gap-3 mb-2">
+          <span class="material-symbols-outlined text-white/60 text-lg">sensors</span>
+          <span class="text-base font-bold text-white">HIVE-007</span>
+          <span class="px-2.5 py-0.5 rounded-full bg-green-500/20 text-green-400 text-[10px] font-mono font-bold border border-green-500/30 flex items-center gap-1.5 shadow-[0_0_10px_rgba(74,222,128,0.1)]"><span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>ACTIVE</span>
+        </div>
+        <p class="text-xs text-white/60">Healthy telemetry 28 of 30 days during flow</p>
+      </div>
+
+      <!-- Harvest Data -->
+      <div>
+        <p class="text-[10px] font-mono text-[#E8A33D] tracking-widest uppercase mb-2 font-bold">Extraction Timestamp</p>
+        <p class="text-base font-bold text-white mb-2">18 Oct 2026, 09:40 IST</p>
+        <p class="text-[11px] font-mono text-[#E8A33D] bg-[#E8A33D]/10 px-2 py-1 rounded inline-block font-semibold border border-[#E8A33D]/20">Tare delta: -20.4kg verified</p>
+      </div>
+    </div>
+
+    <!-- Bottom Lab & Crypto Data -->
+    <div class="mt-12 pt-8 border-t border-white/10 grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
+      <!-- Lab tests -->
+      <div>
+        <p class="text-[10px] font-mono text-[#E8A33D] tracking-widest uppercase mb-3 font-bold">NABL Lab Parameters</p>
+        <div class="flex flex-wrap gap-2.5">
+          <span class="text-[11px] font-mono bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-white shadow-sm hover:border-white/30 transition-colors">Moisture: 17.2% (<18%)</span>
+          <span class="text-[11px] font-mono bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-white shadow-sm hover:border-white/30 transition-colors">HMF: 11 mg/kg (<40)</span>
+          <span class="text-[11px] font-mono bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-white shadow-sm hover:border-white/30 transition-colors">Pollen: 84% Multifloral</span>
+        </div>
+        <a class="inline-flex items-center gap-1.5 text-[11px] text-[#E8A33D] hover:text-white transition-colors font-medium mt-5 group" href="#">
+          <span class="material-symbols-outlined text-sm">description</span>
+          View PDF Certificate 
+          <span class="text-white/30 group-hover:text-white/60 transition-colors font-mono ml-1">(SHA-256 Verified)</span>
+        </a>
+      </div>
+
+      <!-- Blockchain Link -->
+      <div class="lg:text-right">
+        <p class="text-[10px] font-mono text-[#E8A33D] tracking-widest uppercase mb-3 font-bold">Polygon Anchor Transaction</p>
+        <a class="inline-flex items-center gap-2 text-xs font-mono text-white bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2.5 rounded-lg transition-all shadow-sm hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]" href="#">
+          <span class="material-symbols-outlined text-[#E8A33D] text-sm">link</span>
+          19 Oct 2026, tx 0x9f3b8...c21
+          <span class="material-symbols-outlined text-white/40 text-sm group-hover:text-white/80">open_in_new</span>
+        </a>
+        <div class="mt-5 flex items-center justify-start lg:justify-end gap-2 font-mono text-[10px] text-white/50">
+          <span class="font-bold text-white/70">Merkle Root:</span>
+          <code class="bg-black/30 px-2 py-1 rounded border border-white/5 shadow-inner">0x1f90b...a49cc</code>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
-<!-- SECTION 3 — HIVE WEIGHT OVER THE FLOW SEASON (Telemetry Chart) -->
+<!-- SECTION 3 â€” HIVE WEIGHT OVER THE FLOW SEASON (Telemetry Chart) -->
 <section class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg p-6 sm:p-8 shadow-sm space-y-6">
 <!-- Section Header with Yield Badges -->
 <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E7DFC9]">
@@ -500,11 +516,11 @@
 </div>
 <div class="flex items-start gap-2">
 <span class="material-symbols-outlined text-sm text-[#E8A33D]" data-icon="security">security</span>
-<span>Extraction delta matches jar batch lot packaging run (40 units × 500g net = 20.0 kg + comb allowance).</span>
+<span>Extraction delta matches jar batch lot packaging run (40 units Ã— 500g net = 20.0 kg + comb allowance).</span>
 </div>
 </div>
 </section>
-<!-- SECTION 4 — WHAT THIS SYSTEM CANNOT PROVE (Honest Apiculture Integrity Callout) -->
+<!-- SECTION 4 â€” WHAT THIS SYSTEM CANNOT PROVE (Honest Apiculture Integrity Callout) -->
 <section class="bg-[#FBF8F0] border border-[#E7DFC9] rounded-lg p-6 sm:p-8 space-y-5">
 <div class="flex items-center gap-3">
 <div class="w-7 h-7 rounded bg-[#5C3D2E]/10 flex items-center justify-center text-[#5C3D2E]">
@@ -553,7 +569,7 @@
               </h4>
 </div>
 <p class="text-xs text-[#6B6455] leading-relaxed pl-6">
-              Brood core temperature (34.5°C ± 1.5°C) and acoustic swarm detection frequencies are tuned to standard <em>Apis cerana indica</em> and <em>Apis mellifera</em> colony baselines. Extreme Himalayan cloudbursts or abrupt unseasonal cold fronts can cause transient false anomalies.
+              Brood core temperature (34.5Â°C Â± 1.5Â°C) and acoustic swarm detection frequencies are tuned to standard <em>Apis cerana indica</em> and <em>Apis mellifera</em> colony baselines. Extreme Himalayan cloudbursts or abrupt unseasonal cold fronts can cause transient false anomalies.
             </p>
 </div>
 <!-- Boundary Item 4 -->
@@ -582,7 +598,7 @@
 <span class="font-mono text-[11px] text-[#E8A33D] px-1.5 py-0.5 border border-[#E8A33D]/30 rounded">SIH PS-26021</span>
 </div>
 <p class="font-body text-xs text-[#E8DCC3]/60 max-w-lg">
-            © 2025 HoneyChain. Decentralized Apiculture &amp; Honey Provenance Architecture.
+            Â© 2025 HoneyChain. Decentralized Apiculture &amp; Honey Provenance Architecture.
           </p>
 </div>
 <!-- Links from Blueprint JSON -->

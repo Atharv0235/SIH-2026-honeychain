@@ -85,7 +85,27 @@
 <span class="font-headline text-xl font-bold text-[#F6F1E4] tracking-tight">HoneyChain</span>
 </a>
 <!-- Desktop Navigation Links -->
-<nav class="hidden lg:flex items-center gap-7"><a class="text-[#E8A33D] font-medium transition-colors relative py-1 text-sm" href="index.html">Home<span class="absolute bottom-0 left-0 w-full h-[2px] bg-[#E8A33D] rounded-full"></span></a></nav>
+<nav class="hidden lg:flex items-center gap-7">
+  <a class="text-[#E8A33D] font-medium transition-colors relative py-1 text-sm" href="index.html">Home<span class="absolute bottom-0 left-0 w-full h-[2px] bg-[#E8A33D] rounded-full"></span></a>
+  <a class="text-[#F6F1E4] hover:text-[#E8A33D] font-medium transition-colors py-1 text-sm" href="about.html">About Us</a>
+  
+  <!-- Dropdown -->
+  <div class="relative group">
+    <button class="text-[#F6F1E4] group-hover:text-[#E8A33D] font-medium transition-colors py-1 text-sm flex items-center gap-1 focus:outline-none">
+      Our Services
+      <span class="material-symbols-outlined text-[18px]">expand_more</span>
+    </button>
+    <div class="absolute left-0 mt-2 w-48 rounded-xl bg-card border border-hairline shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden transform origin-top scale-95 group-hover:scale-100">
+      <div class="py-2">
+        <a href="#" class="block px-4 py-2.5 text-sm text-ink hover:bg-[#E8A33D]/10 hover:text-[#C97A2B] transition-colors">Traceability</a>
+        <a href="#" class="block px-4 py-2.5 text-sm text-ink hover:bg-[#E8A33D]/10 hover:text-[#C97A2B] transition-colors">Adopt-a-Hive</a>
+        <a href="#" class="block px-4 py-2.5 text-sm text-ink hover:bg-[#E8A33D]/10 hover:text-[#C97A2B] transition-colors">Quality Testing</a>
+      </div>
+    </div>
+  </div>
+
+  <a class="text-[#F6F1E4] hover:text-[#E8A33D] font-medium transition-colors py-1 text-sm" href="#contact">Contact Us</a>
+</nav>
 <!-- Trailing Action / Pill Badge -->
 <div class="flex items-center gap-3">
 <div class="border border-[#E8DCC3]/30 text-[#F6F1E4]/90 text-xs px-3.5 py-1.5 rounded-full bg-[#4A2F22]/60 font-label tracking-wide flex items-center gap-1.5 shadow-inner">
@@ -339,6 +359,43 @@
 <span class="text-xs font-mono text-muted">Contract: 0x9b3...2fa1</span>
 </div>
 </div>
+</section>
+<!-- CONTACT SECTION -->
+<section id="contact" class="pt-8">
+  <div class="bg-card border border-hairline rounded-2xl p-8 sm:p-12 shadow-sm relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-amber/15 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
+    <div class="absolute bottom-0 left-0 w-64 h-64 bg-amber/15 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4"></div>
+    <div class="relative z-10 max-w-3xl mx-auto text-center mb-10">
+      <div class="inline-flex items-center gap-2 text-xs font-mono text-muted mb-3 justify-center w-full">
+        <span class="w-2 h-2 rounded-full bg-amber"></span>
+        <span>Get in Touch</span>
+      </div>
+      <h2 class="font-headline text-3xl sm:text-4xl font-bold text-ink mb-4">Contact Us</h2>
+      <p class="text-muted text-base">Have questions about our traceability architecture or want to partner with us? Reach out to the Neural Nomads team.</p>
+    </div>
+    <form class="relative z-10 max-w-2xl mx-auto space-y-5">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+          <label class="block text-sm font-semibold text-ink mb-1.5">Name</label>
+          <input type="text" class="w-full bg-white border border-hairline rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber focus:ring-1 focus:ring-amber transition-colors shadow-sm" placeholder="Your Name">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-ink mb-1.5">Email</label>
+          <input type="email" class="w-full bg-white border border-hairline rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber focus:ring-1 focus:ring-amber transition-colors shadow-sm" placeholder="you@example.com">
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-ink mb-1.5">Message</label>
+        <textarea rows="4" class="w-full bg-white border border-hairline rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber focus:ring-1 focus:ring-amber transition-colors shadow-sm" placeholder="How can we help?"></textarea>
+      </div>
+      <div class="text-center pt-2">
+        <button type="button" class="bg-[#E8A33D] hover:bg-[#C97A2B] text-white px-8 py-3.5 rounded-xl shadow-md font-bold transition-all duration-150 active:scale-95 inline-flex items-center gap-2">
+          <span>Send Message</span>
+          <span class="material-symbols-outlined text-sm">send</span>
+        </button>
+      </div>
+    </form>
+  </div>
 </section>
 </main>
 <!-- BLUEPRINT FOOTER -->
