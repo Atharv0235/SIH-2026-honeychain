@@ -72,6 +72,13 @@
       animation: beaconPulse 2.4s ease-in-out infinite;
     }
   </style>
+
+    <!-- Google Translate CSS to hide default banner -->
+    <style>
+      body > .skiptranslate { display: none !important; }
+      .goog-te-banner-frame.skiptranslate { display: none !important; }
+      body { top: 0px !important; }
+    </style>
 </head>
 <body class="bg-parchment text-ink font-body selection:bg-amber selection:text-white antialiased min-h-screen relative flex flex-col">
 <!-- FIXED BACKGROUND LAYER -->
@@ -86,6 +93,19 @@
 </a>
 <!-- Desktop Navigation Links -->
 <nav class="hidden lg:flex items-center gap-7"><a class="text-[#E8A33D] font-medium transition-colors relative py-1 text-sm" href="index.html">Home<span class="absolute bottom-0 left-0 w-full h-[2px] bg-[#E8A33D] rounded-full"></span></a></nav>
+        <!-- Language Selector -->
+        <div class="relative group z-50 ml-2 md:ml-4 flex items-center">
+          <button class="flex items-center gap-1 text-[#E8A33D] text-sm font-medium hover:text-[#fbf3de] transition-colors py-1">
+            <span class="material-symbols-outlined text-[18px]">language</span>
+            EN/HI/MR
+          </button>
+          <div class="absolute right-0 top-full mt-1 w-40 bg-[#201C14] border border-[#E8DCC3]/20 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 overflow-hidden">
+            <button onclick="changeLanguage('en')" class="w-full text-left px-4 py-2 text-sm text-[#F6F1E4] hover:bg-[#E8A33D]/20 hover:text-[#E8A33D] transition-colors">English</button>
+            <button onclick="changeLanguage('hi')" class="w-full text-left px-4 py-2 text-sm text-[#F6F1E4] hover:bg-[#E8A33D]/20 hover:text-[#E8A33D] transition-colors">Hindi (हिन्दी)</button>
+            <button onclick="changeLanguage('mr')" class="w-full text-left px-4 py-2 text-sm text-[#F6F1E4] hover:bg-[#E8A33D]/20 hover:text-[#E8A33D] transition-colors">Marathi (मराठी)</button>
+          </div>
+        </div>
+
 <!-- Trailing Action / Pill Badge -->
 <div class="flex items-center gap-3">
 <div class="border border-[#E8DCC3]/30 text-[#F6F1E4]/90 text-xs px-3.5 py-1.5 rounded-full bg-[#4A2F22]/60 font-label tracking-wide flex items-center gap-1.5 shadow-inner">
@@ -141,6 +161,24 @@
       </p>
 </div>
 </footer>
+
+    <!-- Google Translate Script -->
+    <div id="google_translate_element" style="display:none;"></div>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,hi,mr', autoDisplay: false}, 'google_translate_element');
+      }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script>
+      function changeLanguage(langCode) {
+        var selectField = document.querySelector(".goog-te-combo");
+        if(selectField) {
+          selectField.value = langCode;
+          selectField.dispatchEvent(new Event('change'));
+        }
+      }
+    </script>
 </body></html>
 
 

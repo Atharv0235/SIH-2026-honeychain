@@ -98,6 +98,13 @@
       box-shadow: 8px 8px 0px #5C3D2E;
     }
   </style>
+
+    <!-- Google Translate CSS to hide default banner -->
+    <style>
+      body > .skiptranslate { display: none !important; }
+      .goog-te-banner-frame.skiptranslate { display: none !important; }
+      body { top: 0px !important; }
+    </style>
 </head>
 <body class="bg-honeycomb-parchment text-[#201C14] font-body min-h-screen flex flex-col antialiased selection:bg-[#E8A33D]/20 selection:text-[#5C3D2E]">
 <!-- ========================================================================= -->
@@ -112,6 +119,19 @@
 </a>
 <!-- Desktop Navigation Links -->
 <nav class="hidden lg:flex items-center gap-7"><a class="text-[#E8A33D] font-medium transition-colors relative py-1 text-sm" href="index.html">Home<span class="absolute bottom-0 left-0 w-full h-[2px] bg-[#E8A33D] rounded-full"></span></a></nav>
+        <!-- Language Selector -->
+        <div class="relative group z-50 ml-2 md:ml-4 flex items-center">
+          <button class="flex items-center gap-1 text-[#E8A33D] text-sm font-medium hover:text-[#fbf3de] transition-colors py-1">
+            <span class="material-symbols-outlined text-[18px]">language</span>
+            EN/HI/MR
+          </button>
+          <div class="absolute right-0 top-full mt-1 w-40 bg-[#201C14] border border-[#E8DCC3]/20 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 overflow-hidden">
+            <button onclick="changeLanguage('en')" class="w-full text-left px-4 py-2 text-sm text-[#F6F1E4] hover:bg-[#E8A33D]/20 hover:text-[#E8A33D] transition-colors">English</button>
+            <button onclick="changeLanguage('hi')" class="w-full text-left px-4 py-2 text-sm text-[#F6F1E4] hover:bg-[#E8A33D]/20 hover:text-[#E8A33D] transition-colors">Hindi (हिन्दी)</button>
+            <button onclick="changeLanguage('mr')" class="w-full text-left px-4 py-2 text-sm text-[#F6F1E4] hover:bg-[#E8A33D]/20 hover:text-[#E8A33D] transition-colors">Marathi (मराठी)</button>
+          </div>
+        </div>
+
 <!-- Trailing Action / Pill Badge -->
 <div class="flex items-center gap-3">
 <div class="border border-[#E8DCC3]/30 text-[#F6F1E4]/90 text-xs px-3.5 py-1.5 rounded-full bg-[#4A2F22]/60 font-label tracking-wide flex items-center gap-1.5 shadow-inner">
@@ -737,25 +757,29 @@
         </div>
         
         <div class="flex-1 grid grid-cols-2 grid-rows-2 gap-4 min-h-0">
-          <div class="relative rounded-xl overflow-hidden border-2 border-white shadow-md group bg-gray-200">
-            <img id="modal-img-1" src="https://images.unsplash.com/photo-1587049352847-81a56d773c1c?w=500&q=80" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
+          <div class="relative rounded-xl overflow-hidden border-2 border-white shadow-md group bg-black">
+            <img id="modal-img-1" src="assets/hive_cam_morning.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80"></div>
             <div class="absolute bottom-3 left-3 text-white text-[11px] font-mono font-semibold px-2 py-1 rounded bg-black/40 backdrop-blur border border-white/10">08:00 AM - Morning Activity</div>
           </div>
-          <div class="relative rounded-xl overflow-hidden border-2 border-white shadow-md group bg-gray-200">
-            <img id="modal-img-2" src="https://images.unsplash.com/photo-1629851392039-4ee4a2753ef4?w=500&q=80" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
+          <div class="relative rounded-xl overflow-hidden border-2 border-white shadow-md group bg-black">
+            <img id="modal-img-2" src="assets/hive_cam_noon.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80"></div>
             <div class="absolute bottom-3 left-3 text-white text-[11px] font-mono font-semibold px-2 py-1 rounded bg-black/40 backdrop-blur border border-white/10">12:00 PM - Peak Foraging</div>
           </div>
-          <div class="relative rounded-xl overflow-hidden border-2 border-white shadow-md group bg-gray-200">
-            <img id="modal-img-3" src="https://images.unsplash.com/photo-1603525281488-8422ea7f9fb5?w=500&q=80" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
+          <div class="relative rounded-xl overflow-hidden border-2 border-white shadow-md group bg-black">
+            <img id="modal-img-3" src="assets/hive_cam_evening.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80"></div>
             <div class="absolute bottom-3 left-3 text-white text-[11px] font-mono font-semibold px-2 py-1 rounded bg-black/40 backdrop-blur border border-white/10">16:00 PM - Frame Capping</div>
           </div>
-          <div class="relative rounded-xl overflow-hidden border-2 border-white shadow-md group bg-gray-200">
-            <img id="modal-img-4" src="https://images.unsplash.com/photo-1555562768-212450ff7191?w=500&q=80" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80"></div>
-            <div class="absolute bottom-3 left-3 text-white text-[11px] font-mono font-semibold px-2 py-1 rounded bg-black/40 backdrop-blur border border-white/10">20:00 PM - Cluster Formation</div>
+          <div class="relative rounded-xl overflow-hidden border-4 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)] group bg-black">
+            <img id="modal-img-4" src="assets/hive_cam_night.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-90"></div>
+            <!-- Criticality Certificate Badge -->
+            <div class="absolute top-3 right-3 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-md bg-red-600/90 backdrop-blur border border-red-400 flex items-center gap-1 shadow-lg animate-pulse">
+              <span class="material-symbols-outlined text-[14px]">warning</span> CRITICAL STATUS: MITE INFESTATION
+            </div>
+            <div class="absolute bottom-3 left-3 text-white text-[11px] font-mono font-semibold px-2 py-1 rounded bg-black/60 backdrop-blur border border-red-500/50 text-red-100">20:00 PM - Cluster Formation (RECENT)</div>
           </div>
         </div>
       </div>
@@ -790,25 +814,19 @@ function openHiveModal(hiveId, weight) {
   const numMatch = hiveId.match(/\d+/);
   const seed = numMatch ? parseInt(numMatch[0]) : 0;
   
-  // Curated list of "hive in a box" and apiary photos from Unsplash
+  // Hive box camera images (internal camera shots)
   const boxPhotos = [
-    "https://images.unsplash.com/photo-1629851392039-4ee4a2753ef4?w=500&q=80",
-    "https://images.unsplash.com/photo-1502444330042-d1a1ddf9bb5b?w=500&q=80",
-    "https://images.unsplash.com/photo-1603525281488-8422ea7f9fb5?w=500&q=80",
-    "https://images.unsplash.com/photo-1555562768-212450ff7191?w=500&q=80",
-    "https://images.unsplash.com/photo-1612140683679-0dbf80e920d3?w=500&q=80",
-    "https://images.unsplash.com/photo-1601058269785-5eb7ebff7741?w=500&q=80",
-    "https://images.unsplash.com/photo-1650379965306-6966dd264879?w=500&q=80",
-    "https://images.unsplash.com/photo-1579510103554-722a9443586b?w=500&q=80",
-    "https://images.unsplash.com/photo-1596706782294-8ceb1d6247c6?w=500&q=80",
-    "https://images.unsplash.com/photo-1582736173877-3e198a65576a?w=500&q=80"
+    "assets/hive_cam_morning.jpg",
+    "assets/hive_cam_noon.jpg",
+    "assets/hive_cam_evening.jpg",
+    "assets/hive_cam_night.jpg"
   ];
   
-  // Randomly assign 4 photos based on the seed
-  document.getElementById('modal-img-1').src = boxPhotos[(seed * 2) % boxPhotos.length];
-  document.getElementById('modal-img-2').src = boxPhotos[(seed * 3 + 1) % boxPhotos.length];
-  document.getElementById('modal-img-3').src = boxPhotos[(seed * 5 + 2) % boxPhotos.length];
-  document.getElementById('modal-img-4').src = boxPhotos[(seed * 7 + 3) % boxPhotos.length];
+  // Assign the 4 daily inspection photos
+  document.getElementById('modal-img-1').src = boxPhotos[0];
+  document.getElementById('modal-img-2').src = boxPhotos[1];
+  document.getElementById('modal-img-3').src = boxPhotos[2];
+  document.getElementById('modal-img-4').src = boxPhotos[3];
 
   document.getElementById('hive-modal').classList.remove('hidden');
 }
@@ -817,6 +835,24 @@ function closeHiveModal() {
   document.getElementById('hive-modal').classList.add('hidden');
 }
 </script>
+
+    <!-- Google Translate Script -->
+    <div id="google_translate_element" style="display:none;"></div>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,hi,mr', autoDisplay: false}, 'google_translate_element');
+      }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script>
+      function changeLanguage(langCode) {
+        var selectField = document.querySelector(".goog-te-combo");
+        if(selectField) {
+          selectField.value = langCode;
+          selectField.dispatchEvent(new Event('change'));
+        }
+      }
+    </script>
 </body></html>
 
 

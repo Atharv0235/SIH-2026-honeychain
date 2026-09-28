@@ -71,6 +71,13 @@
     }
     input:focus, select:focus, textarea:focus { border-color: #E8A33D; }
   </style>
+
+    <!-- Google Translate CSS to hide default banner -->
+    <style>
+      body > .skiptranslate { display: none !important; }
+      .goog-te-banner-frame.skiptranslate { display: none !important; }
+      body { top: 0px !important; }
+    </style>
 </head>
 <body class="font-body min-h-screen flex flex-col antialiased relative">
 
@@ -90,6 +97,19 @@
         <button onclick="setTab('sales')"      class="tab-nav-btn text-[#fbf3de]/80 hover:text-[#E8A33D] text-sm font-medium transition-colors">Sales</button>
         <button onclick="setTab('analytics')"  class="tab-nav-btn text-[#fbf3de]/80 hover:text-[#E8A33D] text-sm font-medium transition-colors">Analytics</button>
       </nav>
+        <!-- Language Selector -->
+        <div class="relative group z-50 ml-2 md:ml-4 flex items-center">
+          <button class="flex items-center gap-1 text-[#E8A33D] text-sm font-medium hover:text-[#fbf3de] transition-colors py-1">
+            <span class="material-symbols-outlined text-[18px]">language</span>
+            EN/HI/MR
+          </button>
+          <div class="absolute right-0 top-full mt-1 w-40 bg-[#201C14] border border-[#E8DCC3]/20 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 overflow-hidden">
+            <button onclick="changeLanguage('en')" class="w-full text-left px-4 py-2 text-sm text-[#F6F1E4] hover:bg-[#E8A33D]/20 hover:text-[#E8A33D] transition-colors">English</button>
+            <button onclick="changeLanguage('hi')" class="w-full text-left px-4 py-2 text-sm text-[#F6F1E4] hover:bg-[#E8A33D]/20 hover:text-[#E8A33D] transition-colors">Hindi (हिन्दी)</button>
+            <button onclick="changeLanguage('mr')" class="w-full text-left px-4 py-2 text-sm text-[#F6F1E4] hover:bg-[#E8A33D]/20 hover:text-[#E8A33D] transition-colors">Marathi (मराठी)</button>
+          </div>
+        </div>
+
       <div class="border border-[#E8DCC3]/30 text-[#fbf3de]/90 text-xs px-3.5 py-1.5 rounded-full bg-[#4A2F22]/60 font-mono tracking-wide flex items-center gap-1.5 shadow-inner">
         <span class="w-1.5 h-1.5 rounded-full bg-[#E8A33D]"></span>
         <span class="hidden sm:inline">Team Neural Nomads &middot; SIH 2026</span>
@@ -632,5 +652,23 @@
       }
     });
   </script>
+
+    <!-- Google Translate Script -->
+    <div id="google_translate_element" style="display:none;"></div>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,hi,mr', autoDisplay: false}, 'google_translate_element');
+      }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script>
+      function changeLanguage(langCode) {
+        var selectField = document.querySelector(".goog-te-combo");
+        if(selectField) {
+          selectField.value = langCode;
+          selectField.dispatchEvent(new Event('change'));
+        }
+      }
+    </script>
 </body>
 </html>
